@@ -30,6 +30,30 @@ open_positions = ig_service.fetch_open_positions()
 print(open_positions)
 ```
 
+**Note:** For Singapore account password has to be encrypted via RSA with timestamp using token received
+
+```python
+# get encrypted key for singaporean x.x
+requestKeyAndTimestamp = requests.get(self.BASE_URL + '/session/encryptionKey', headers=self.BASIC_HEADERS)
+
+m_data = requestKeyAndTimestamp.json()
+
+decoded = base64.b64decode(m_data['encryptionKey'])
+rsakey = RSA.importKey(decoded)
+
+# using rsaKey, encrypt password + "|" + timestamp
+message = self.IG_PASSWORD + '|' + str(m_data['timeStamp'])
+#print(message.encode('utf-8'))
+input = base64.b64encode(message.encode('utf-8'))
+# we encode and decode from base 64 string so that the byte is read in same format b4 converting back to string for our json payload
+encryptedPassword = base64.b64encode(PKCS1_v1_5.new(rsakey).encrypt(input)).decode('utf-8')
+
+# yup replace plain clear text password with the rsa encrypted password
+params['password'] = encryptedPassword
+
+response = requests.post(self.BASE_URL + '/session', data=json.dumps(params), headers=self.BASIC_HEADERS)
+```
+
 with `ig_service_config.py`
 
 ```python
