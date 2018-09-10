@@ -1,7 +1,7 @@
 #Config file
 
-username = "demo"
-password = "demo99"
-api_key = "################################"
+username = "poryeedemo"
+password = "zxc"
+api_key = "zxc"
 acc_type = "DEMO" # LIVE / DEMO
-acc_number = "AWQ3E"
+acc_number = "xzc"
