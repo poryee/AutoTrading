@@ -4,8 +4,6 @@ __author__ = 'po'
 from ig_service import IGService
 from ig_service_config import * # defines username, password, api_key, acc_type,
 from datetime import datetime, timedelta
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
@@ -41,73 +39,59 @@ def getHistoricalData():
     resolution = 'DAY' # resolution = 'H', '1Min'
 
 
-    endDate = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    startDate = endDate - timedelta(days=20)
 
     #(yyyy:MM:dd-HH:mm:ss)
     today = datetime.today()
-    startDate = str(today.date() - timedelta(days=20)).replace("-",":") + "-00:00:00"
+    startDate = str(today.date() - timedelta(days=30)).replace("-",":") + "-00:00:00"
     endDate = str(today.date() - timedelta(days=0)).replace("-",":") + "-00:00:00"
 
     response = ig_service.fetch_historical_prices_by_epic_and_date_range(epic,resolution,startDate,endDate)
     return response['prices']
 
-def STOK(close, low, high, n):
-    STOK = ((close - pd.rolling_min(low, n)) / (pd.rolling_max(high, n) - pd.rolling_min(low, n))) * 100
-    return STOK
 
-def STOD(close, low, high, n):
-    STOK = ((close - pd.rolling_min(low, n)) / (pd.rolling_max(high, n) - pd.rolling_min(low, n))) * 100
-    STOD = pd.rolling_mean(STOK, 3)
-    return STOD
 
+
+def getAverage(dataArray):
+    tempList = []
+    for priceObject in dataArray:
+        tempList.append((priceObject['ask']+priceObject['bid'])/2)
+    return tempList
 
 # construct stochastic indicator to determine momentum in direction using (formula is just highest high - close/ highest high - lowest low)* 100 to get percentage
 def constructIndicator(pastData):
     # TODO use the market data function to retrieve the OHLC
     # http://www.andrewshamlet.net/2017/07/13/python-tutorial-stochastic-oscillator/
     # http://www.pythonforfinance.net/2017/10/10/stochastic-oscillator-trading-strategy-backtest-in-python/
-    print(pastData['openPrice'])
-    print(pastData['lowPrice'])
-    print(pastData['highPrice'])
-    print(pastData['closePrice'])
-    print(pastData['lastTradedVolume'])
 
-
-    tempList = []
     # iterate list of json and average up the results
-    for priceObject in pastData['openPrice']:
-        tempList.append((priceObject['ask']+priceObject['bid'])/2)
+    pastData['averageOpen'] = getAverage(pastData['openPrice'])
+    pastData['averageLow'] = getAverage(pastData['lowPrice'])
+    pastData['averageHigh'] = getAverage(pastData['highPrice'])
+    pastData['averageClose'] = getAverage(pastData['closePrice'])
 
-    pastData['averageOpen'] =tempList
 
 
-    print(pastData['averageOpen'])
-    #pastData['%K'] = STOK(df['Close'], df['Low'], df['High'], 14)
-    #pastData['%D'] = STOD(df['Close'], df['Low'], df['High'], 14)
+    # Create the "lowestLow" column in the DataFrame
+    pastData['lowestLow'] = pastData['averageLow'].rolling(window=14).min()
 
-    #pastData.plot(y=['Close'], figsize = (20, 5))
-    #pastData.plot(y=['%K', '%D'], figsize = (20, 5))
+    # Create the "highestHigh" column in the DataFrame
+    pastData['highestHigh'] = pastData['averageHigh'].rolling(window=14).max()
 
-    '''
-    #Create the "L14" column in the DataFrame
-    df['L14'] = df['Low'].rolling(window=14).min()
+    # Create the "%K" column in the DataFrame refer to the function comment for formula of stochastic ociliator
+    pastData['%K'] = ((pastData['averageClose'] - pastData['lowestLow']) / (pastData['highestHigh'] - pastData['lowestLow']))*100
 
-    #Create the "H14" column in the DataFrame
-    df['H14'] = df['High'].rolling(window=14).max()
+    #Create the "%D" column in the DataFrame moving average of calculated K
+    pastData['%D'] = pastData['%K'].rolling(window=3).mean()
 
-    #Create the "%K" column in the DataFrame
-    df['%K'] = 100*((df['Close'] - df['L14']) / (df['H14'] - df['L14']) )
-
-    #Create the "%D" column in the DataFrame
-    df['%D'] = df['%K'].rolling(window=3).mean()
+    # drop 14 bar ago
+    pastData.drop(pastData.index[:15], inplace=True)
 
     fig, axes = plt.subplots(nrows=2, ncols=1,figsize=(20,10))
 
-    df['Close'].plot(ax=axes[0]); axes[0].set_title('Close')
-    df[['%K','%D']].plot(ax=axes[1]); axes[1].set_title('Oscillator')
-    '''
-    pass
+    pastData['averageClose'].plot(ax=axes[0]); axes[0].set_title('Close')
+    pastData[['%K','%D']].plot(ax=axes[1]); axes[1].set_title('Oscillator')
+    plt.show()
+
 
 
 
