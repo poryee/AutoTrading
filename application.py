@@ -93,6 +93,8 @@ def constructIndicator(pastData):
     plt.show()
 
 
+    # consider building other indicator
+
 
 
 
@@ -102,14 +104,22 @@ def automateTrading():
 
 # measure and evaluate system developed
 def performanceTest():
+    # Calmar
+    # Monte Carlo
     pass
 
 # proceed to use machine learning algorithm to predict the weekly price range to provide more confidence
 def machineLearning():
+    # use RNN to
+    # predict the following week
     pass
 
 if __name__ == "__main__":
-    pastData=getHistoricalData()
+    #pastData=getHistoricalData()
     #print(pastData)
-    constructIndicator(pastData)
+    #constructIndicator(pastData)
+
+    print(datetime.today())
+    # limit to 2 trades from # 9.30pm US market opening
+
     #TODO after all is set and done final todo is to use it on CFD account
