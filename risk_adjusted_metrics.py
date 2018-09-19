@@ -3,7 +3,7 @@ __author__ = 'po'
 Performance metrics to measure performance of strategy with respect to the risk adjusted returns
 some strategy might give higher returns but if the draw downs/volatility is a lot higher for that 1 or 2 percent
 it might not be worth
-Courtesy of TuningFinance
+Courtesy of TuningFinance: http://www.turingfinance.com/computational-investing-with-python-week-one/
 '''
 
 import math

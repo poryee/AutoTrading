@@ -110,8 +110,9 @@ def performanceTest():
 
 # proceed to use machine learning algorithm to predict the weekly price range to provide more confidence
 def machineLearning():
-    # use RNN to
-    # predict the following week
+    # use RNN to predict the following week
+    # https://github.com/LiamConnell/deep-algotrading/blob/master/notebooks/lstm_(7).ipynb
+    # https://github.com/Yvictor/TradingGym
     pass
 
 if __name__ == "__main__":
