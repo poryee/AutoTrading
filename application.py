@@ -44,27 +44,26 @@ def getHistoricalData():
     # Instrument tag # US500 DFB
     epic = 'IX.D.DOW.IGD.IP'
 
-    #Price resolution (SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH)
-    resolution = 'DAY' # resolution = 'H', '1Min'
+    # Price resolution (SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH)
+    resolution = 'DAY'  # resolution = 'H', '1Min'
 
 
 
     #(yyyy:MM:dd-HH:mm:ss)
     today = datetime.today()
-    startDate = str(today.date() - timedelta(days=30)).replace("-",":") + "-00:00:00"
-    endDate = str(today.date() - timedelta(days=0)).replace("-",":") + "-00:00:00"
+    startDate = str(today.date() - timedelta(days=30)).replace("-", ":") + "-00:00:00"
+    endDate = str(today.date() - timedelta(days=0)).replace("-", ":") + "-00:00:00"
 
-    response = ig_service.fetch_historical_prices_by_epic_and_date_range(epic,resolution,startDate,endDate)
+    response = ig_service.fetch_historical_prices_by_epic_and_date_range(epic, resolution, startDate, endDate)
     return response['prices']
-
-
 
 
 def getAverage(dataArray):
     tempList = []
     for priceObject in dataArray:
-        tempList.append((priceObject['ask']+priceObject['bid'])/2)
+        tempList.append((priceObject['ask'] + priceObject['bid']) / 2)
     return tempList
+
 
 # construct stochastic indicator to determine momentum in direction using (formula is just highest high - close/ highest high - lowest low)* 100 to get percentage
 def constructIndicator(pastData):
@@ -78,8 +77,6 @@ def constructIndicator(pastData):
     pastData['averageHigh'] = getAverage(pastData['highPrice'])
     pastData['averageClose'] = getAverage(pastData['closePrice'])
 
-
-
     # Create the "lowestLow" column in the DataFrame
     pastData['lowestLow'] = pastData['averageLow'].rolling(window=14).min()
 
@@ -87,41 +84,44 @@ def constructIndicator(pastData):
     pastData['highestHigh'] = pastData['averageHigh'].rolling(window=14).max()
 
     # Create the "%K" column in the DataFrame refer to the function comment for formula of stochastic ociliator
-    pastData['%K'] = ((pastData['averageClose'] - pastData['lowestLow']) / (pastData['highestHigh'] - pastData['lowestLow']))*100
+    pastData['%K'] = ((pastData['averageClose'] - pastData['lowestLow']) / (
+    pastData['highestHigh'] - pastData['lowestLow'])) * 100
 
-    #Create the "%D" column in the DataFrame moving average of calculated K
+    # Create the "%D" column in the DataFrame moving average of calculated K
     pastData['%D'] = pastData['%K'].rolling(window=3).mean()
 
-    # drop 14 bar ago
-    pastData.drop(pastData.index[:15], inplace=True)
+    # drop 14 bar ago cut away parts of chart without indicator
+    # pastData.drop(pastData.index[:15], inplace=True)
 
-    fig, axes = plt.subplots(nrows=2, ncols=1,figsize=(20,10))
+    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(20, 10))
 
-    pastData['averageClose'].plot(ax=axes[0]); axes[0].set_title('Close')
-    pastData[['%K','%D']].plot(ax=axes[1]); axes[1].set_title('Oscillator')
-    plt.show()
+    pastData['averageClose'].plot(ax=axes[0]);
+    axes[0].set_title('Close')
+    pastData[['%K', '%D']].plot(ax=axes[1]);
+    axes[1].set_title('Oscillator')
+    # plt.show()
 
     return pastData
     # consider building other indicator
 
 
 # proceed to use machine learning algorithm to predict the weekly price range to provide more confidence
-def machineLearning(formattedData):
+def machineLearning(pastDataWithIndicator):
     # use RNN to predict the following week
     # https://github.com/LiamConnell/deep-algotrading/blob/master/notebooks/lstm_(7).ipynb
     # https://github.com/Yvictor/TradingGym
     alphaGenerator = AlphaGenerator()
+    alphaGenerator.guaranteedROI(pastDataWithIndicator)
 
 
 # using indicator to trade demo account
 def automateTrading():
     # using ml model prediction and stochastic indicator to trade daily range
-    pastData=getHistoricalData()
-    formattedData=constructIndicator(pastData)
+    pastData = getHistoricalData()
+    pastDataWithIndicator = constructIndicator(pastData)
 
     # using past 20 day data
-    machineLearning(formattedData)
-
+    machineLearning(pastDataWithIndicator)
 
     print(datetime.today())
     # limit to 2 trades from # 9.30pm US market opening
@@ -130,6 +130,8 @@ def automateTrading():
 
 # measure and evaluate system developed
 def performanceTest():
+
+
     # Calmar
     # The Calmar ratio discounts the expected excess return of a portfolio by the worst expected maximum draw down for that portfolio,
 
@@ -148,12 +150,21 @@ def performanceTest():
     pass
 
 
-
+'''
+what is the key outcome?
+1) high accuracy prediction model on the index using past data predicting (next week close or average)
+2) how accurate >95% at 15 or 25 points (cater for slippages)
+3) robust when back tested against historical data not
+4) reinforcement learning trading algo that runs on top of prediction and raw data
+5) automate trade demo using model and algo
+'''
 if __name__ == "__main__":
     automateTrading()
     # performanceTest()
 
     # after ML alpha generator is able to predict next day ohlc for the following data with high degree of accuracy in automatedtrading
     # proceed to build reinforcement learning and use performanceTest calmar ratio as fitness score
+
+
 
     #TODO after all is set and done final todo is to use it on CFD account
