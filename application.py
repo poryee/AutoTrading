@@ -1,4 +1,10 @@
+from keras.optimizers import Adam
+
 __author__ = 'po'
+
+
+from keras import Sequential
+from keras.layers import LSTM, Dense
 
 # ig services
 from ig_service import IGService
@@ -49,7 +55,7 @@ def getHistoricalData():
 
 
 
-    #(yyyy:MM:dd-HH:mm:ss)
+    # (yyyy:MM:dd-HH:mm:ss)
     today = datetime.today()
     startDate = str(today.date() - timedelta(days=30)).replace("-", ":") + "-00:00:00"
     endDate = str(today.date() - timedelta(days=0)).replace("-", ":") + "-00:00:00"
@@ -85,7 +91,7 @@ def constructIndicator(pastData):
 
     # Create the "%K" column in the DataFrame refer to the function comment for formula of stochastic ociliator
     pastData['%K'] = ((pastData['averageClose'] - pastData['lowestLow']) / (
-    pastData['highestHigh'] - pastData['lowestLow'])) * 100
+        pastData['highestHigh'] - pastData['lowestLow'])) * 100
 
     # Create the "%D" column in the DataFrame moving average of calculated K
     pastData['%D'] = pastData['%K'].rolling(window=3).mean()
@@ -111,7 +117,9 @@ def machineLearning(pastDataWithIndicator):
     # https://github.com/LiamConnell/deep-algotrading/blob/master/notebooks/lstm_(7).ipynb
     # https://github.com/Yvictor/TradingGym
     alphaGenerator = AlphaGenerator()
-    alphaGenerator.guaranteedROI(pastDataWithIndicator)
+    alphaGenerator.trainBaseline()
+    # alphaGenerator.mnistTest()
+    #alphaGenerator.guaranteedROI(pastDataWithIndicator)
 
 
 # using indicator to trade demo account
@@ -130,8 +138,6 @@ def automateTrading():
 
 # measure and evaluate system developed
 def performanceTest():
-
-
     # Calmar
     # The Calmar ratio discounts the expected excess return of a portfolio by the worst expected maximum draw down for that portfolio,
 
@@ -150,6 +156,9 @@ def performanceTest():
     pass
 
 
+
+
+
 '''
 what is the key outcome?
 1) high accuracy prediction model on the index using past data predicting (next week close or average)
@@ -159,9 +168,10 @@ what is the key outcome?
 5) automate trade demo using model and algo
 '''
 if __name__ == "__main__":
-    automateTrading()
+    alphaGenerator = AlphaGenerator()
+    alphaGenerator.trainBaseline()
+    # automateTrading()
     # performanceTest()
-
     # after ML alpha generator is able to predict next day ohlc for the following data with high degree of accuracy in automatedtrading
     # proceed to build reinforcement learning and use performanceTest calmar ratio as fitness score
 
