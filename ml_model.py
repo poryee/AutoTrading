@@ -1,14 +1,10 @@
 __author__ = 'po'
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from keras import Sequential
 from keras.layers import Dense, Dropout, LSTM
 from keras.optimizers import Adam
-from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
-from sklearn.linear_model import LinearRegression
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 
 
 class AlphaGenerator:
@@ -59,7 +55,6 @@ class AlphaGenerator:
     we will need to normalise our data base on percent change
     we don't want huge fluctuation from volume to impact prediction everything will be relative to their own columns.
     '''
-
     def preprocessing(self, dataframe):
         tempDataframe = dataframe.drop("futureLow", axis=1)
 
@@ -75,11 +70,9 @@ class AlphaGenerator:
 
 
 
-
-
-        tempDataframe.dropna(inplace=True)
-
-        return tempDataframe
+    # wait for better prediction algo for linear current tech cmi
+    def steadyROI(self):
+        pass
 
 
 
