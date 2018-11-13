@@ -11,9 +11,8 @@ from keras.optimizers import Adam
 class Agent:
     def __init__(self, state_size, is_eval=False, model_name=""):
         self.state_size = state_size  # normalized previous days
-        self.action_size = 3  # hold, buy, sell
+        self.action_size = 3  # <25 points, 25-50 points, 50>
         self.memory = deque(maxlen=1000)
-        self.inventory = []
         self.model_name = model_name
         self.is_eval = is_eval
 

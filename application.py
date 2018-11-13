@@ -43,7 +43,7 @@ def getHistoricalData():
     epic = 'IX.D.DOW.IGD.IP'
 
     # Price resolution (SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH)
-    resolution = 'DAY'  # resolution = 'H', '1Min'
+    resolution = 'MINUTE_30'  # resolution = 'H', '1Min'
 
 
 
@@ -84,6 +84,10 @@ def constructIndicator(pastData):
     # Create the "%K" column in the DataFrame refer to the function comment for formula of stochastic ociliator
     pastData['%K'] = ((pastData['averageClose'] - pastData['lowestLow']) / (
         pastData['highestHigh'] - pastData['lowestLow'])) * 100
+
+
+    # save so we can retrain model using most recent data
+    #pastData.to_csv("yahoo_finance\\30Min.csv", sep=',', encoding='utf-8')
 
     # Create the "%D" column in the DataFrame moving average of calculated K
     pastData['%D'] = pastData['%K'].rolling(window=3).mean()
@@ -200,44 +204,62 @@ def machineLearning():
     '''
 
     window_size = 10
-
-    agent = Agent(window_size, True, "newmodel_ep0")
-    # eva
+    # train first
+    agent = Agent(window_size, False,"newmodel_ep0")
+    # get closing stock price
     data = getStockClosingDataVec("DJI")
-    l = len(data) - 1
+    closingLength = len(data) - 1
     batch_size = 32
 
     state = getState(data, 0, window_size + 1)
-    total_profit = 0
+    total_reward = 0
     agent.inventory = []
 
-    for t in range(l):
+    for t in range(closingLength-5):
         action = agent.act(state)
 
         # sit
         next_state = getState(data, t + 1, window_size + 1)
         reward = 0
 
-        if action == 1: # buy
-            agent.inventory.append(data[t])
-            print("Buy: " + formatPrice(data[t]))
+        lowestLow = min(data[t],data[t+1],data[t+2],data[t+3],data[t+4])
 
-        elif action == 2 and len(agent.inventory) > 0: # sell
-            bought_price = agent.inventory.pop(0)
-            reward = max(data[t] - bought_price, 0)
-            total_profit += data[t] - bought_price
-            print("Sell: " + formatPrice(data[t]) + " | Profit: " + formatPrice(data[t] - bought_price))
+        # instead of buying or selling predict the lowest low categorically for 30min time frame
+        if action == 0: # lowest low in >50 range of close
 
-        done = True if t == l - 1 else False
+            # check how far away from lowest low
+            if(abs(data[t]-lowestLow))>=50:
+                print("Don't Buy: " + formatPrice(data[t]) + "no margin of safety")
+                reward =25
+
+        elif action == 1: # lowest low in <25 range of close
+
+            # check how far away from lowest low
+            if(abs(data[t]-lowestLow))<25:
+                print("Buy: " + formatPrice(data[t]) + "Lowest low with margin of safety")
+                reward = 75
+
+        elif(abs(data[t]-lowestLow))>=25 and (abs(data[t]-lowestLow))<50:
+                print("Buy: " + formatPrice(data[t]) + "Long with cautious, get ready")
+
+
+        total_reward+=reward
+
+        done = True if t == closingLength - 6 else False
         agent.memory.append((state, action, reward, next_state, done))
         state = next_state
 
         if done:
             print("--------------------------------")
-            print("^DJI" + " Total Profit: " + formatPrice(total_profit))
+            print("^DJI" + " Total reward: " + formatPrice(total_reward))
             print("--------------------------------")
 
 
+        if len(agent.memory) > batch_size:
+                agent.expReplay(batch_size)
+
+        if t % 100 == 0:
+            agent.model.save("model_backup/newmodel_ep" + str(t))
     # alphaGenerator.mnistTest()
 
 
@@ -268,8 +290,9 @@ def performanceTest():
 # using indicator to trade demo account
 def automateTrading():
     # using ml model prediction and stochastic indicator to trade daily range
-    # pastData = getHistoricalData()
-    # pastDataWithIndicator = constructIndicator(pastData)
+    pastData = getHistoricalData()
+    pastDataWithIndicator = constructIndicator(pastData)
+
 
     # using past 20 day data
     # machineLearning(pastDataWithIndicator)
