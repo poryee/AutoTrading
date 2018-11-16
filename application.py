@@ -205,7 +205,7 @@ def machineLearning():
 
     window_size = 10
     # train first
-    agent = Agent(window_size, False,"newmodel_ep0")
+    agent = Agent(window_size, False,"newmodel_ep1200")
     # get closing stock price
     data = getStockClosingDataVec("DJI")
     closingLength = len(data) - 1
@@ -231,6 +231,8 @@ def machineLearning():
             if(abs(data[t]-lowestLow))>=50:
                 print("Don't Buy: " + formatPrice(data[t]) + "no margin of safety")
                 reward =25
+            else:
+                reward = -25
 
         elif action == 1: # lowest low in <25 range of close
 
@@ -238,10 +240,13 @@ def machineLearning():
             if(abs(data[t]-lowestLow))<25:
                 print("Buy: " + formatPrice(data[t]) + "Lowest low with margin of safety")
                 reward = 75
-
-        elif(abs(data[t]-lowestLow))>=25 and (abs(data[t]-lowestLow))<50:
+            else:
+                reward = -75
+        elif action == 2:
+            if(abs(data[t]-lowestLow))>=25 and (abs(data[t]-lowestLow))<50:
                 print("Buy: " + formatPrice(data[t]) + "Long with cautious, get ready")
-
+            else:
+                reward = -50
 
         total_reward+=reward
 
