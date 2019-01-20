@@ -17,7 +17,7 @@ from rl_agent import Agent
 
 
 # fetch the open high low and close at daily time resolution for the past 20 days for analysis
-def getHistoricalData():
+def getHistoricalData(specificDate):
     ig_service = IGService(username, password, api_key, acc_type)
     ig_service.create_session()
 
@@ -43,14 +43,17 @@ def getHistoricalData():
     epic = 'IX.D.DOW.IGD.IP'
 
     # Price resolution (SECOND, MINUTE, MINUTE_2, MINUTE_3, MINUTE_5, MINUTE_10, MINUTE_15, MINUTE_30, HOUR, HOUR_2, HOUR_3, HOUR_4, DAY, WEEK, MONTH)
-    resolution = 'MINUTE_30'  # resolution = 'H', '1Min'
+    resolution = 'MINUTE_5'  # resolution = 'H', '1Min'
 
 
 
     # (yyyy:MM:dd-HH:mm:ss)
-    today = datetime.today()
-    startDate = str(today.date() - timedelta(days=30)).replace("-", ":") + "-00:00:00"
-    endDate = str(today.date() - timedelta(days=0)).replace("-", ":") + "-00:00:00"
+    #today = datetime.today()
+    #startDate = str(today.date() - timedelta(days=2)).replace("-", ":") + "-00:00:00"
+    #endDate = str(today.date() - timedelta(days=0)).replace("-", ":") + "-00:00:00"
+
+    startDate = specificDate.date().strftime('%Y:%m:%d')+"-00:00:00"
+    endDate = (specificDate + timedelta(days=1)).date().strftime('%Y:%m:%d')+"-23:55:00"
 
     response = ig_service.fetch_historical_prices_by_epic_and_date_range(epic, resolution, startDate, endDate)
     return response['prices']
@@ -59,8 +62,18 @@ def getHistoricalData():
 def getAverage(dataArray):
     tempList = []
     for priceObject in dataArray:
-        tempList.append((priceObject['ask'] + priceObject['bid']) / 2)
+        tempList.append(round((priceObject['ask'] + priceObject['bid']) / 2,2))
     return tempList
+
+
+def saveSpecificDate(pastData, date):
+    # iterate list of json and average up the results
+    pastData['averageOpen'] = getAverage(pastData['openPrice'])
+    pastData['averageLow'] = getAverage(pastData['lowPrice'])
+    pastData['averageHigh'] = getAverage(pastData['highPrice'])
+    pastData['averageClose'] = getAverage(pastData['closePrice'])
+
+    pastData.to_csv("data/"+str(date.date())+".csv")
 
 
 # construct stochastic indicator to determine momentum in direction using (formula is just highest high - close/ highest high - lowest low)* 100 to get percentage
@@ -69,11 +82,7 @@ def constructIndicator(pastData):
     # http://www.andrewshamlet.net/2017/07/13/python-tutorial-stochastic-oscillator/
     # http://www.pythonforfinance.net/2017/10/10/stochastic-oscillator-trading-strategy-backtest-in-python/
 
-    # iterate list of json and average up the results
-    pastData['averageOpen'] = getAverage(pastData['openPrice'])
-    pastData['averageLow'] = getAverage(pastData['lowPrice'])
-    pastData['averageHigh'] = getAverage(pastData['highPrice'])
-    pastData['averageClose'] = getAverage(pastData['closePrice'])
+
 
     # Create the "lowestLow" column in the DataFrame
     pastData['lowestLow'] = pastData['averageLow'].rolling(window=14).min()
@@ -292,17 +301,22 @@ def performanceTest():
 
 
 
-# using indicator to trade demo account
+
 def automateTrading():
     # using ml model prediction and stochastic indicator to trade daily range
-    pastData = getHistoricalData()
-    pastDataWithIndicator = constructIndicator(pastData)
+    specificDate = datetime.strptime('2018-12-15', '%Y-%m-%d')
 
+    # 100 days
+    for i in range(100):
+        if(specificDate.weekday()!=6):
+            pastData = getHistoricalData(specificDate)
+            saveSpecificDate(pastData,specificDate)
+        specificDate -= timedelta(days=1)
 
+    # pastDataWithIndicator = constructIndicator(pastData)
     # using past 20 day data
     # machineLearning(pastDataWithIndicator)
-    machineLearning()
-    print(datetime.today())
+    #machineLearning()
     # limit to 2 trades from # 9.30pm US market opening
 
 
