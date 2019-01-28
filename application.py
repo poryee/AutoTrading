@@ -7,14 +7,14 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 
 # ig services
-from ig_service import IGService
+from dataprovider.ig_service import IGService
 # defines username, password, api_key, acc_type
-from ig_service_config import *
+from dataprovider.ig_service_config import *
 # libs
-from ml_model import AlphaGenerator
 from risk_adjusted_metrics import *
-from rl_agent import Agent
-
+from mlcore.rl_agent import Agent
+import glob
+import pandas as pd
 
 # fetch the open high low and close at daily time resolution for the past 20 days for analysis
 def getHistoricalData(specificDate):
@@ -59,10 +59,25 @@ def getHistoricalData(specificDate):
     return response['prices']
 
 
+
+def bulkDownload(date, numberOfDays):
+    specificDate = datetime.strptime(date, '%Y-%m-%d')
+
+    # 10 days
+    for i in range(numberOfDays):
+        if(specificDate.weekday()!=6):
+            pastData = getHistoricalData(specificDate)
+            saveSpecificDate(pastData,specificDate)
+        specificDate -= timedelta(days=1)
+
+
 def getAverage(dataArray):
     tempList = []
     for priceObject in dataArray:
-        tempList.append(round((priceObject['ask'] + priceObject['bid']) / 2,2))
+        if(priceObject['bid']!=None and priceObject['ask']!=None):
+            tempList.append(round((priceObject['ask'] + priceObject['bid']) / 2,2))
+        else:
+            tempList.append(0)
     return tempList
 
 
@@ -281,13 +296,14 @@ def machineLearning():
 
 
 # measure and evaluate system developed
-def performanceTest():
+def performanceTest(returns):
     # Calmar
     # The Calmar ratio discounts the expected excess return of a portfolio by the worst expected maximum draw down for that portfolio,
 
     # simulation
     # Returns from the portfolio (r) and market (m)
-    returns = nrand.uniform(-1, 1, 50)
+    # returns = nrand.uniform(-1, 1, 50)
+
     # Expected return
     averageExpectedReturn = np.mean(returns)
 
@@ -299,39 +315,49 @@ def performanceTest():
     # Monte Carlo
     pass
 
+def trainMLModel():
+    # retrieve data
+    allFiles = glob.glob("data/*.csv")
 
+    list_ = []
+    for file_ in allFiles:
+        df = pd.read_csv(file_,sep=',',index_col=0, header=0)
+        list_.append(df)
+    pastData = pd.concat(list_, axis = 0, ignore_index = True)
+
+    print(pastData.shape[0])
+    print(pastData.info())
+
+    machineLearning(pastData)
+
+def evaluateMLModel():
+    pass
 
 
 def automateTrading():
-    # using ml model prediction and stochastic indicator to trade daily range
-    specificDate = datetime.strptime('2018-12-15', '%Y-%m-%d')
 
-    # 100 days
-    for i in range(100):
-        if(specificDate.weekday()!=6):
-            pastData = getHistoricalData(specificDate)
-            saveSpecificDate(pastData,specificDate)
-        specificDate -= timedelta(days=1)
-
+    pass
     # pastDataWithIndicator = constructIndicator(pastData)
+
     # using past 20 day data
-    # machineLearning(pastDataWithIndicator)
-    #machineLearning()
-    # limit to 2 trades from # 9.30pm US market opening
+    # machineLearning(pastData)
+
 
 
 '''
 what is the key outcome?
-1) high accuracy prediction model on the index using past data predicting (next week close or average)
-2) how accurate >95% at 15 or 25 points (cater for slippages)
-3) robust when back tested against historical data not
-4) reinforcement learning trading algo that runs on top of prediction and raw data
-5) automate trade demo using model and algo
+1) reinforcement to trade profitably daily basis
+2) robust when back tested against historical data 2 month
+3) automate trade demo using model and algo
 '''
 if __name__ == "__main__":
-    automateTrading()
-    # performanceTest()
-    # after ML alpha generator is able to predict next day ohlc for the following data with high degree of accuracy in automatedtrading
+
+    #bulkDownload('2018-12-08', 10)
+    trainMLModel()
+    results = evaluateMLModel()
+    # performanceTest(results)
+
+    # automateTrading()
     # proceed to build reinforcement learning and use performanceTest calmar ratio as fitness score
 
 

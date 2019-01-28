@@ -6,9 +6,11 @@ Run unit tests using
 nosetests -s -v
 """
 
-from ig_service import IGService
-from ig_service_config import * # defines username, password, api_key, acc_type, acc_number
 import pandas as pd
+
+from ig_service import IGService
+from dataprovider.ig_service_config import * # defines username, password, api_key, acc_type, acc_number
+
 
 def test_ig_service():
     ig_service = IGService(username, password, api_key, acc_type)
