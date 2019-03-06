@@ -1,3 +1,5 @@
+from mlcore.custom_gym import CustomEnv
+
 __author__ = 'po'
 
 # scheduler
@@ -12,9 +14,10 @@ from dataprovider.ig_service import IGService
 from dataprovider.ig_service_config import *
 # libs
 from risk_adjusted_metrics import *
-from mlcore.rl_agent import Agent
+from mlcore.rl_agent import torchDQN
 import glob
 import pandas as pd
+
 
 # fetch the open high low and close at daily time resolution for the past 20 days for analysis
 def getHistoricalData(specificDate):
@@ -71,6 +74,9 @@ def bulkDownload(date, numberOfDays):
         specificDate -= timedelta(days=1)
 
 
+
+
+
 def getAverage(dataArray):
     tempList = []
     for priceObject in dataArray:
@@ -93,11 +99,8 @@ def saveSpecificDate(pastData, date):
 
 # construct stochastic indicator to determine momentum in direction using (formula is just highest high - close/ highest high - lowest low)* 100 to get percentage
 def constructIndicator(pastData):
-    # TODO use the market data function to retrieve the OHLC
     # http://www.andrewshamlet.net/2017/07/13/python-tutorial-stochastic-oscillator/
     # http://www.pythonforfinance.net/2017/10/10/stochastic-oscillator-trading-strategy-backtest-in-python/
-
-
 
     # Create the "lowestLow" column in the DataFrame
     pastData['lowestLow'] = pastData['averageLow'].rolling(window=14).min()
@@ -168,130 +171,6 @@ def getState(data, t, n):
     return np.array([res])
 
 
-# proceed to use machine learning algorithm to predict the weekly price range to provide more confidence
-def machineLearning():
-    # use RNN to predict the following week
-    # https://github.com/LiamConnell/deep-algotrading/blob/master/notebooks/lstm_(7).ipynb
-    # https://github.com/Yvictor/TradingGym
-    # alphaGenerator = AlphaGenerator()
-
-    # assuming we have better prediction algorithm in the future
-    # prediction = alphaGenerator.steadyROI()
-
-    '''
-    stock_name, window_size, episode_count = "^GSPC", int(10), int(1000)
-
-    agent = Agent(window_size)
-    closingData = getStockClosingDataVec(stock_name)
-    l = len(closingData) - 1
-    batch_size = 32
-
-    episode_count = 1000
-    for e in range(episode_count + 1):
-        print ("Episode " + str(e) + "/" + str(episode_count))
-        state = getState(closingData, 0,window_size + 1)
-
-        total_profit = 0
-        agent.inventory = []
-
-        for t in range(l):
-            action = agent.act(state)
-
-            # sit
-            next_state = getState(closingData, t + 1, window_size + 1)
-            reward = 0
-
-            if action == 1:  # buy
-                agent.inventory.append(closingData[t])
-                print("Buy: " + formatPrice(closingData[t]))
-
-            elif action == 2 and len(agent.inventory) > 0:  # sell
-                bought_price = agent.inventory.pop(0)
-                reward = max(closingData[t] - bought_price, 0)
-                total_profit += closingData[t] - bought_price
-                print("Sell: " + formatPrice(closingData[t]) + " | Profit: " + formatPrice(closingData[t] - bought_price))
-
-            done = True if t == l - 1 else False
-            agent.memory.append((state, action, reward, next_state, done))
-            state = next_state
-
-            if done:
-                print("--------------------------------")
-                print("Total Profit: " + formatPrice(total_profit))
-                print("--------------------------------")
-
-            if len(agent.memory) > batch_size:
-                agent.expReplay(batch_size)
-
-        if e % 100 == 0:
-            agent.model.save("model_backup/newmodel_ep" + str(e))
-    '''
-
-    window_size = 10
-    # train first
-    agent = Agent(window_size, False,"newmodel_ep1200")
-    # get closing stock price
-    data = getStockClosingDataVec("DJI")
-    closingLength = len(data) - 1
-    batch_size = 32
-
-    state = getState(data, 0, window_size + 1)
-    total_reward = 0
-    agent.inventory = []
-
-    for t in range(closingLength-5):
-        action = agent.act(state)
-
-        # sit
-        next_state = getState(data, t + 1, window_size + 1)
-        reward = 0
-
-        lowestLow = min(data[t],data[t+1],data[t+2],data[t+3],data[t+4])
-
-        # instead of buying or selling predict the lowest low categorically for 30min time frame
-        if action == 0: # lowest low in >50 range of close
-
-            # check how far away from lowest low
-            if(abs(data[t]-lowestLow))>=50:
-                print("Don't Buy: " + formatPrice(data[t]) + "no margin of safety")
-                reward =25
-            else:
-                reward = -25
-
-        elif action == 1: # lowest low in <25 range of close
-
-            # check how far away from lowest low
-            if(abs(data[t]-lowestLow))<25:
-                print("Buy: " + formatPrice(data[t]) + "Lowest low with margin of safety")
-                reward = 75
-            else:
-                reward = -75
-        elif action == 2:
-            if(abs(data[t]-lowestLow))>=25 and (abs(data[t]-lowestLow))<50:
-                print("Buy: " + formatPrice(data[t]) + "Long with cautious, get ready")
-            else:
-                reward = -50
-
-        total_reward+=reward
-
-        done = True if t == closingLength - 6 else False
-        agent.memory.append((state, action, reward, next_state, done))
-        state = next_state
-
-        if done:
-            print("--------------------------------")
-            print("^DJI" + " Total reward: " + formatPrice(total_reward))
-            print("--------------------------------")
-
-
-        if len(agent.memory) > batch_size:
-                agent.expReplay(batch_size)
-
-        if t % 100 == 0:
-            agent.model.save("model_backup/newmodel_ep" + str(t))
-    # alphaGenerator.mnistTest()
-
-
 
 
 
@@ -312,8 +191,7 @@ def performanceTest(returns):
 
     print("Calmar Ratio =", calmar_ratio(averageExpectedReturn, returns, riskFreeRate))
 
-    # Monte Carlo
-    pass
+
 
 def trainMLModel():
     # retrieve data
@@ -323,12 +201,68 @@ def trainMLModel():
     for file_ in allFiles:
         df = pd.read_csv(file_,sep=',',index_col=0, header=0)
         list_.append(df)
+    # concatenate every row in the list and reset index to sequential
     pastData = pd.concat(list_, axis = 0, ignore_index = True)
 
-    print(pastData.shape[0])
-    print(pastData.info())
 
-    machineLearning(pastData)
+    # setsnapshotTime as index
+    pastDataAsState = pastData[['snapshotTime','averageOpen','averageHigh','averageLow','averageClose','lastTradedVolume']]
+    pastDataAsState.snapshotTime = pd.to_datetime(pastData['snapshotTime'], format='%Y:%m:%d-%H:%M:%S')
+    pastDataAsState.set_index('snapshotTime', inplace=True)
+    print(pastDataAsState.head())
+    # print(pastDataAsState.info())
+    # asd=pastDataAsState.iloc[0,:]
+    # print(pastDataAsState.loc['2019-02-01'])
+    # print(type(pastDataAsState.loc['2019-02-01']))
+
+    # initialise gym environment with single day slice of past data
+    env=CustomEnv(pastDataAsState.loc['2019-02-08'])
+
+    #dqn = torchDQN()
+    total_reward = []
+    print('\nCollecting experience...')
+    # trade the same day 400 times
+    for i_episode in range(400):
+        s = env.reset()
+        ep_r = 0
+        while True:
+            #env.render()
+            # see how random trading with 2:1 RRR will perform
+            a = np.random.randint(0, 3)
+            #a = dqn.choose_action(s)
+
+            # take action
+            s_, r, done, info = env.step(a)
+
+            # modify the reward
+            # x, x_dot, theta, theta_dot = s_
+            # r1 = (env.x_threshold - abs(x)) / env.x_threshold - 0.8
+            # r2 = (env.theta_threshold_radians - abs(theta)) / env.theta_threshold_radians - 0.5
+            # r = r1 + r2
+
+            #dqn.store_transition(s, a, r, s_)
+
+            #ep_r += r
+            #if dqn.memory_counter > 10000:
+            #    dqn.learn()
+            #    if done:
+            #        print('Ep: ', i_episode,
+            #              '| Ep_r: ', round(ep_r, 2))
+
+            if done:
+                ep_r = r
+                break
+            s = s_
+        total_reward.append(ep_r)
+
+    plt.title('Reward')
+    plt.xlabel('No of Episodes')
+    plt.ylabel('Total reward')
+    plt.plot(np.arange(len(total_reward)), total_reward, 'r-', lw=5)
+
+    plt.show()
+    #dqn.save()
+
 
 def evaluateMLModel():
     pass
@@ -346,15 +280,16 @@ def automateTrading():
 
 '''
 what is the key outcome?
-1) reinforcement to trade profitably daily basis
-2) robust when back tested against historical data 2 month
-3) automate trade demo using model and algo
+1) reinforcement to trade profitably daily basis (pending <-- most likely dqn or rdn)
+2) robust when back tested against historical data 2 month (Downloaded)
+3) automate trade demo using model and algorithm (completed custom gym environment for agent to interact with based on ig dow jones data in 5min resolution)
+
 '''
 if __name__ == "__main__":
 
-    #bulkDownload('2018-12-08', 10)
+    # bulkDownload('2019-02-26', 3)
     trainMLModel()
-    results = evaluateMLModel()
+    #results = evaluateMLModel()
     # performanceTest(results)
 
     # automateTrading()
