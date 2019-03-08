@@ -19,7 +19,7 @@ ENV_A_SHAPE = 0 if isinstance(env.action_space.sample(),
                               int) else env.action_space.sample().shape  # to confirm the shape
 '''
 N_ACTIONS = 3
-N_STATES = 10
+N_STATES = 5
 ENV_A_SHAPE = 0
 PATH = "net.pkl"
 
@@ -49,7 +49,7 @@ class torchDQN(object):
 
         self.learn_step_counter = 0  # for target updating
         self.memory_counter = 0  # for storing memory
-        self.memory = np.zeros((MEMORY_CAPACITY, N_STATES * 2 + 2))  # initialize memory *2 cause old and new state + 2 cause action
+        self.memory = np.zeros((MEMORY_CAPACITY, N_STATES * 2 + 2))  # initialize memory *2 cause old and new state + 2 cause action and reward
 
         self.loss_func = nn.MSELoss()
 
@@ -81,10 +81,10 @@ class torchDQN(object):
         # sample batch transitions
         sample_index = np.random.choice(MEMORY_CAPACITY, BATCH_SIZE)
         b_memory = self.memory[sample_index, :]
-        b_s = torch.FloatTensor(b_memory[:, :N_STATES])
-        b_a = torch.LongTensor(b_memory[:, N_STATES:N_STATES + 1].astype(int))
-        b_r = torch.FloatTensor(b_memory[:, N_STATES + 1:N_STATES + 2])
-        b_s_ = torch.FloatTensor(b_memory[:, -N_STATES:])
+        b_s = torch.FloatTensor(b_memory[:, :N_STATES]) # old state  till 4th column
+        b_a = torch.LongTensor(b_memory[:, N_STATES:N_STATES + 1].astype(int)) # then 4th till 4th +1
+        b_r = torch.FloatTensor(b_memory[:, N_STATES + 1:N_STATES + 2]) # then 4th +1 till 4th +2
+        b_s_ = torch.FloatTensor(b_memory[:, -N_STATES:]) # -5 the remaining from behind is new state
 
         # q_eval w.r.t the action in experience
         q_eval = self.eval_net(b_s).gather(1, b_a)  # shape (batch, 1)

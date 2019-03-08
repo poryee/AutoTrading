@@ -9,7 +9,7 @@ class CustomEnv():
         # initial balance
         self.balance = 1000
         self.actionSpace = 3  # buy, do nothing, sell (for simplicity we let fixed sl tp dictate exit)
-        self.observationSpace = len(dataframe.columns)  # ohlcv
+        self.observationSpace = len(dataframe.columns)  # ohlcv 5
         self.indexPointer = 0
         self.positions = deque()
         self.fxRate = 1.36
@@ -71,7 +71,6 @@ class CustomEnv():
         positionToClear = 0
         for position in self.positions:
 
-
             # cut loss
             # long position - stoploss < lowestlow
             if self.longShortFlag == 0 and (position - self.stopLoss) < currentState[2]:
@@ -84,7 +83,8 @@ class CustomEnv():
                 positionToClear +=1
                 continue
 
-             # take profit
+
+            # take profit
             # long position + takeprofit > highesthigh
             if self.longShortFlag == 0 and (position - self.stopLoss) < currentState[1]:
                 self.balance += self.takeProfit * self.fxRate * self.lotSize

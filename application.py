@@ -216,9 +216,9 @@ def trainMLModel():
     # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env=CustomEnv(pastDataAsState.loc['2019-02-08'])
+    env=CustomEnv(pastDataAsState.loc['2019-02-02'])
 
-    #dqn = torchDQN()
+    dqn = torchDQN()
     total_reward = []
     print('\nCollecting experience...')
     # trade the same day 400 times
@@ -229,6 +229,7 @@ def trainMLModel():
             #env.render()
             # see how random trading with 2:1 RRR will perform
             a = np.random.randint(0, 3)
+
             #a = dqn.choose_action(s)
 
             # take action
@@ -245,11 +246,11 @@ def trainMLModel():
             #ep_r += r
             #if dqn.memory_counter > 10000:
             #    dqn.learn()
-            #    if done:
-            #        print('Ep: ', i_episode,
-            #              '| Ep_r: ', round(ep_r, 2))
+
+
 
             if done:
+                print('Ep: ', i_episode, '| Ep_r: ', round(r, 2))
                 ep_r = r
                 break
             s = s_
@@ -287,7 +288,7 @@ what is the key outcome?
 '''
 if __name__ == "__main__":
 
-    # bulkDownload('2019-02-26', 3)
+    #bulkDownload('2019-03-05', 4)
     trainMLModel()
     #results = evaluateMLModel()
     # performanceTest(results)
