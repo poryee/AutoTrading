@@ -1,3 +1,11 @@
+# AutoTrading
+## Key Objective
+---------------
+1) reinforcement machine learning algorithm to trade profitably daily basis (pending <-- most likely dqn or rdn)
+2) robust when back tested against historical data 2 month (Downloaded <-- calmar ratio writen)
+3) automate trade demo using model and algorithm (completed custom gym environment for agent to interact with based on ig dow jones data in 5min resolution)
+
+
 ## IG Markets REST API - Python Library
 --------------------------------------
 
