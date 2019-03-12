@@ -139,4 +139,4 @@ class CustomEnv():
     def _get_reward(self):
         # abs(position - averageClose)
         # just the realised balance we should not consider fluctuations
-        return self.balance
+        return self.balance-1000

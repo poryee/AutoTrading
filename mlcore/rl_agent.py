@@ -23,9 +23,43 @@ N_STATES = 5
 ENV_A_SHAPE = 0
 PATH = "net.pkl"
 
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__()
+
+
+        self.feature = nn.Sequential(
+            nn.Linear(N_STATES, 50),
+            nn.ReLU()
+        )
+
+        self.advantage = nn.Sequential(
+            nn.Linear(50, 50),
+            nn.ReLU(),
+            nn.Linear(50, N_ACTIONS)
+        )
+
+        self.value = nn.Sequential(
+            nn.Linear(50, 50),
+            nn.ReLU(),
+            nn.Linear(50, 1)
+        )
+
+
+    def forward(self, x):
+        x = self.feature(x)
+        advantage = self.advantage(x)
+        value = self.value(x)
+
+        # split out value and advantage to form q target
+        # because we want to know which frames are valuable to act on instead of the entire as a consequence
+        return value + advantage  - advantage.mean()
+
+
 class torchDQN(object):
     def __init__(self):
 
+        '''
         self.eval_net = torch.nn.Sequential(
             torch.nn.Linear(N_STATES, 50),  # 50 is number of dense layer out
             torch.nn.ReLU(),
@@ -37,6 +71,11 @@ class torchDQN(object):
             torch.nn.ReLU(),
             torch.nn.Linear(50, N_ACTIONS)
         )
+        '''
+
+        # upgrade to dueling dqn almost the same just split our the target net
+        self.eval_net, self.target_net = Net(), Net()
+
         self.optimizer = torch.optim.Adam(self.eval_net.parameters(), lr=LR)
 
         if (os.path.exists(PATH)):
@@ -57,9 +96,10 @@ class torchDQN(object):
         x = torch.unsqueeze(torch.FloatTensor(x), 0)
         # input only one sample
         if np.random.uniform() < EPSILON:  # greedy
-            actions_value = self.eval_net(x)
+            actions_value = self.eval_net.forward(x)
             action = torch.max(actions_value, 1)[1].data.numpy()
             action = action[0] if ENV_A_SHAPE == 0 else action.reshape(ENV_A_SHAPE)  # return the argmax index
+
         else:  # random
             action = np.random.randint(0, N_ACTIONS)
             action = action if ENV_A_SHAPE == 0 else action.reshape(ENV_A_SHAPE)

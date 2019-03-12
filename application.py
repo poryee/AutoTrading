@@ -216,10 +216,11 @@ def trainMLModel():
     # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env=CustomEnv(pastDataAsState.loc['2019-02-02'])
+    env=CustomEnv(pastDataAsState.loc['2019-02-15'])
 
     dqn = torchDQN()
     total_reward = []
+    total_action = []
     print('\nCollecting experience...')
     # trade the same day 400 times
     for i_episode in range(400):
@@ -228,10 +229,10 @@ def trainMLModel():
         while True:
             #env.render()
             # see how random trading with 2:1 RRR will perform
-            a = np.random.randint(0, 3)
+            #a = np.random.randint(0, 3)
 
-            #a = dqn.choose_action(s)
-
+            a = dqn.choose_action(s)
+            total_action.append(a)
             # take action
             s_, r, done, info = env.step(a)
 
@@ -243,9 +244,9 @@ def trainMLModel():
 
             #dqn.store_transition(s, a, r, s_)
 
-            #ep_r += r
-            #if dqn.memory_counter > 10000:
-            #    dqn.learn()
+            ep_r += r
+            if dqn.memory_counter > 10000:
+                dqn.learn()
 
 
 
@@ -255,6 +256,9 @@ def trainMLModel():
                 break
             s = s_
         total_reward.append(ep_r)
+    import collections
+    counter=collections.Counter(total_action)
+    print("total unique action ", print(counter))
 
     plt.title('Reward')
     plt.xlabel('No of Episodes')
@@ -284,13 +288,16 @@ what is the key outcome?
 1) reinforcement to trade profitably daily basis (pending <-- most likely dqn or rdn)
 2) robust when back tested against historical data 2 month (Downloaded)
 3) automate trade demo using model and algorithm (completed custom gym environment for agent to interact with based on ig dow jones data in 5min resolution)
+4) unrealised profit or loss into state & new action close position
+5) check if underfit or overfit model
+&) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
 
 '''
 if __name__ == "__main__":
 
-    #bulkDownload('2019-03-05', 4)
+    # bulkDownload('2019-03-09', 4)
     trainMLModel()
-    #results = evaluateMLModel()
+    # results = evaluateMLModel()
     # performanceTest(results)
 
     # automateTrading()
