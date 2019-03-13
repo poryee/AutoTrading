@@ -216,7 +216,7 @@ def trainMLModel():
     # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env=CustomEnv(pastDataAsState.loc['2019-02-15'])
+    env=CustomEnv(pastDataAsState.loc['2019-02-19'])
 
     dqn = torchDQN()
     total_reward = []
@@ -242,7 +242,7 @@ def trainMLModel():
             # r2 = (env.theta_threshold_radians - abs(theta)) / env.theta_threshold_radians - 0.5
             # r = r1 + r2
 
-            #dqn.store_transition(s, a, r, s_)
+            dqn.store_transition(s, a, r, s_)
 
             ep_r += r
             if dqn.memory_counter > 10000:
