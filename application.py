@@ -245,7 +245,11 @@ def trainMLModel():
             dqn.store_transition(s, a, r, s_)
 
             ep_r += r
+
+            # every 10k steps we train our model both eval and target
             if dqn.memory_counter > 10000:
+                # but target updates at a slower rate so learning is more stable
+                # think of eval as the hyper active child and target as the parent that critics the child exploration
                 dqn.learn()
 
 
@@ -295,7 +299,7 @@ what is the key outcome?
 '''
 if __name__ == "__main__":
 
-    # bulkDownload('2019-03-09', 4)
+    #bulkDownload('2019-03-13', 4)
     trainMLModel()
     # results = evaluateMLModel()
     # performanceTest(results)

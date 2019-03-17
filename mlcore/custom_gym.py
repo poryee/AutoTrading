@@ -1,5 +1,6 @@
 __author__ = 'po'
 from collections import deque
+import numpy as np
 
 
 class CustomEnv():
@@ -8,7 +9,7 @@ class CustomEnv():
 
         # initial balance
         self.balance = 1000
-        self.actionSpace = 3  # buy, do nothing, sell (for simplicity we let fixed sl tp dictate exit)
+        self.actionSpace = 4  # buy, hold, sell, close
         self.observationSpace = len(dataframe.columns)  # ohlcv 5
         self.indexPointer = 0
         self.positions = deque()
@@ -16,7 +17,7 @@ class CustomEnv():
         self.lotSize = 0.1
         self.stopLoss = 25
         self.takeProfit = 50
-        self.longShortFlag = 0  # 0 long 1 short
+        self.longShortFlag = 0  # neutral 0 long 1 short -1
 
 
     def step(self, action):
@@ -65,73 +66,85 @@ class CustomEnv():
         pass
 
     def _getState(self):
-        return self.dataframe.iloc[self.indexPointer, :].values
+        return np.append(self.dataframe.iloc[self.indexPointer, :].values, self.longShortFlag)
 
-    def _clearPositions(self, currentState, action):
-        positionToClear = 0
+    def _checkInitialPositions(self, currentState):
+        numPositionToClear = 0
         for position in self.positions:
 
             # cut loss
-            # long position - stoploss < lowestlow
-            if self.longShortFlag == 0 and (position - self.stopLoss) < currentState[2]:
+            # long position and position - currentLow >= stoploss
+            if self.longShortFlag == 1 and (position - currentState[2] >= self.stopLoss):
                 self.balance -= self.stopLoss * self.fxRate * self.lotSize
-                positionToClear +=1
+                numPositionToClear +=1
                 continue
-            # short position + stoploss > highesthigh
-            elif self.longShortFlag == 1 and (position + self.stopLoss) > currentState[1]:
+            # short position and position + highesthigh >= stoploss
+            elif self.longShortFlag == -1 and (currentState[1] - position >=  self.stopLoss):
                 self.balance -= self.stopLoss * self.fxRate * self.lotSize
-                positionToClear +=1
+                numPositionToClear +=1
                 continue
 
 
             # take profit
-            # long position + takeprofit > highesthigh
-            if self.longShortFlag == 0 and (position - self.stopLoss) < currentState[1]:
+            # long position and highesthigh - position >= takeprofit
+            if self.longShortFlag == 1 and (currentState[1] - position >= self.takeProfit):
                 self.balance += self.takeProfit * self.fxRate * self.lotSize
-                positionToClear +=1
+                numPositionToClear +=1
                 continue
-            # short position - stoploss < lowestlow
-            elif self.longShortFlag == 1 and (position + self.stopLoss) > currentState[2]:
+            # short position and position - lowestlow >= takeprofit
+            elif self.longShortFlag == -1 and (position - currentState[2] >= self.takeProfit):
                 self.balance += self.takeProfit * self.fxRate * self.lotSize
-                positionToClear +=1
+                numPositionToClear +=1
                 continue
 
-
-
-
-            # close position
-            if action == 0 and self.longShortFlag==1:
-                self.balance += (currentState[3] - position) # 11 - 12
-                positionToClear +=1
-                continue
-            elif action == 2 and self.longShortFlag ==0:
-                self.balance += (position - currentState[3]) # 12 - 11
-                positionToClear +=1
-
-        for _ in range(positionToClear):
+        for _ in range(numPositionToClear):
             self.positions.popleft()
 
-    def _addPositions(self, newState, action):
-        if action == 0:
-            # add long position for new state open
-            self.positions.append(newState[0])
-            self.longShortFlag = 0
 
+    def _take_action(self, action):
+
+        self.indexPointer += 1
+
+        # close old position that hits limit
+        currentState = self._getState()
+        self._checkInitialPositions(currentState)
+
+        # get new state
+        newState = self._getState()
+        # buy
+        if action == 0:
+            # double down into current position provided its in same or neutral direction
+            if self.longShortFlag==1 or self.longShortFlag==0:
+                # add long position for new state open
+                self.positions.append(newState[0])
+                self.longShortFlag = 1
+
+        # hold
         elif (action == 1):
             # nothing
             pass
-        else:
-            self.positions.append(newState[0])
+
+        # sell
+        elif (action == 2):
+            # double down into current position provided its in same or neutral direction
+            if self.longShortFlag==-1 or self.longShortFlag==0:
+                self.positions.append(newState[0])
+                self.longShortFlag = -1
+
+        elif (action == 3):
+            for position in self.positions:
+                # close position
+                if action == 0 and self.longShortFlag==1:
+                    self.balance += (newState[3] - position) # 11 - 12
+                elif action == 2 and self.longShortFlag ==-1:
+                    self.balance += (position - newState[3]) # 12 - 11
+
+            # clear all position leaving length to 0
+            self.positions.clear()
+            # reset flag
             self.longShortFlag = 0
-        pass
 
-    def _take_action(self, action):
-        currentState = self._getState()
-        self.indexPointer += 1
-        self._clearPositions(currentState, action)
 
-        newState = self._getState()
-        self._addPositions(newState, action)
 
 
 

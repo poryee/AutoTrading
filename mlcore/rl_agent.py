@@ -18,8 +18,8 @@ N_STATES = env.observation_space.shape[0]
 ENV_A_SHAPE = 0 if isinstance(env.action_space.sample(),
                               int) else env.action_space.sample().shape  # to confirm the shape
 '''
-N_ACTIONS = 3
-N_STATES = 5
+N_ACTIONS = 4 # retrieve from custom environment buy, hold, sell, close
+N_STATES = 6 # ohlcv + position direction
 ENV_A_SHAPE = 0
 PATH = "net.pkl"
 
