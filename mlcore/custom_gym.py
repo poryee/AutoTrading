@@ -134,9 +134,9 @@ class CustomEnv():
         elif (action == 3):
             for position in self.positions:
                 # close position
-                if action == 0 and self.longShortFlag==1:
+                if self.longShortFlag==1:
                     self.balance += (newState[3] - position) # 11 - 12
-                elif action == 2 and self.longShortFlag ==-1:
+                elif self.longShortFlag ==-1:
                     self.balance += (position - newState[3]) # 12 - 11
 
             # clear all position leaving length to 0
