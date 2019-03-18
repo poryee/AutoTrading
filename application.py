@@ -17,7 +17,7 @@ from risk_adjusted_metrics import *
 from mlcore.rl_agent import torchDQN
 import glob
 import pandas as pd
-
+import collections
 
 # fetch the open high low and close at daily time resolution for the past 20 days for analysis
 def getHistoricalData(specificDate):
@@ -229,7 +229,7 @@ def trainMLModel():
         while True:
             #env.render()
             # see how random trading with 2:1 RRR will perform
-            #a = np.random.randint(0, 3)
+            # a = np.random.randint(0, 4)
 
             a = dqn.choose_action(s)
             total_action.append(a)
@@ -243,7 +243,6 @@ def trainMLModel():
             # r = r1 + r2
 
             dqn.store_transition(s, a, r, s_)
-
             ep_r += r
 
             # every 10k steps we train our model both eval and target
@@ -252,15 +251,13 @@ def trainMLModel():
                 # think of eval as the hyper active child and target as the parent that critics the child exploration
                 dqn.learn()
 
-
-
             if done:
                 print('Ep: ', i_episode, '| Ep_r: ', round(r, 2))
                 ep_r = r
                 break
             s = s_
         total_reward.append(ep_r)
-    import collections
+
     counter=collections.Counter(total_action)
     print("total unique action ", print(counter))
 
@@ -289,24 +286,22 @@ def automateTrading():
 
 '''
 what is the key outcome?
-1) reinforcement to trade profitably daily basis (pending <-- most likely dqn or rdn)
-2) robust when back tested against historical data 2 month (Downloaded)
+1) reinforcement to trade profitably daily basis <-- Done DDQN will trt rdn when got time
+2) robust when back tested against historical data 2 month <-- Done
 3) automate trade demo using model and algorithm (completed custom gym environment for agent to interact with based on ig dow jones data in 5min resolution)
-4) unrealised profit or loss into state & new action close position
-5) check if underfit or overfit model
-&) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
+4) unrealised profit or loss into state & new action close position <-- Done
+5) Multiday training and validation <-- current
+6) custom env to provide returns array via info for performanceTest
+7) check if underfit or overfit model
+8) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
 
 '''
 if __name__ == "__main__":
 
-    #bulkDownload('2019-03-13', 4)
+    #bulkDownload('2019-03-17', 4)
     trainMLModel()
     # results = evaluateMLModel()
     # performanceTest(results)
 
     # automateTrading()
-    # proceed to build reinforcement learning and use performanceTest calmar ratio as fitness score
-
-
-
-    #TODO after all is set and done final todo is to use it on CFD account
+    # TODO after all is set and done final todo is to use it on CFD account

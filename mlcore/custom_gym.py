@@ -103,12 +103,11 @@ class CustomEnv():
 
     def _take_action(self, action):
 
-        self.indexPointer += 1
-
         # close old position that hits limit
         currentState = self._getState()
         self._checkInitialPositions(currentState)
 
+        self.indexPointer += 1
         # get new state
         newState = self._getState()
         # buy
