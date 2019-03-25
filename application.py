@@ -267,12 +267,85 @@ def trainMLModel():
     plt.plot(np.arange(len(total_reward)), total_reward, 'r-', lw=5)
 
     plt.show()
-    #dqn.save()
+    dqn.save()
 
 
 def evaluateMLModel():
-    pass
+    allFiles = glob.glob("data/*.csv")
 
+    list_ = []
+    for file_ in allFiles:
+        df = pd.read_csv(file_,sep=',',index_col=0, header=0)
+        list_.append(df)
+    # concatenate every row in the list and reset index to sequential
+    pastData = pd.concat(list_, axis = 0, ignore_index = True)
+
+
+    # setsnapshotTime as index
+    pastDataAsState = pastData[['snapshotTime','averageOpen','averageHigh','averageLow','averageClose','lastTradedVolume']]
+    pastDataAsState.snapshotTime = pd.to_datetime(pastData['snapshotTime'], format='%Y:%m:%d-%H:%M:%S')
+    pastDataAsState.set_index('snapshotTime', inplace=True)
+    print(pastDataAsState.head())
+    # print(pastDataAsState.info())
+    # asd=pastDataAsState.iloc[0,:]
+    # print(pastDataAsState.loc['2019-02-01'])
+    # print(type(pastDataAsState.loc['2019-02-01']))
+
+    # initialise gym environment with single day slice of past data
+    env=CustomEnv(pastDataAsState.loc['2019-02-20'])
+
+    dqn = torchDQN()
+    total_reward = []
+    total_action = []
+    print('\nCollecting experience...')
+    # trade the same day 400 times
+    for i_episode in range(400):
+        s = env.reset()
+        ep_r = 0
+        while True:
+            #env.render()
+            # see how random trading with 2:1 RRR will perform
+            # a = np.random.randint(0, 4)
+
+            a = dqn.choose_action(s)
+            total_action.append(a)
+            # take action
+            s_, r, done, info = env.step(a)
+
+            # modify the reward
+            # x, x_dot, theta, theta_dot = s_
+            # r1 = (env.x_threshold - abs(x)) / env.x_threshold - 0.8
+            # r2 = (env.theta_threshold_radians - abs(theta)) / env.theta_threshold_radians - 0.5
+            # r = r1 + r2
+
+            dqn.store_transition(s, a, r, s_)
+            ep_r += r
+
+            # every 10k steps we train our model both eval and target
+            if dqn.memory_counter > 10000:
+                # but target updates at a slower rate so learning is more stable
+                # think of eval as the hyper active child and target as the parent that critics the child exploration
+                dqn.learn()
+
+            if done:
+                print('Ep: ', i_episode, '| Ep_r: ', round(r, 2))
+                ep_r = r
+                break
+            s = s_
+        total_reward.append(ep_r)
+
+    counter=collections.Counter(total_action)
+    print("total unique action ", print(counter))
+
+    plt.title('Reward')
+    plt.xlabel('No of Episodes')
+    plt.ylabel('Total reward')
+    plt.plot(np.arange(len(total_reward)), total_reward, 'r-', lw=5)
+
+    plt.show()
+
+    # temporary placeholder for balance
+    return True
 
 def automateTrading():
 
@@ -290,7 +363,7 @@ what is the key outcome?
 2) robust when back tested against historical data 2 month <-- Done
 3) automate trade demo using model and algorithm (completed custom gym environment for agent to interact with based on ig dow jones data in 5min resolution)
 4) unrealised profit or loss into state & new action close position <-- Done
-5) Multiday training and validation <-- current
+5) Multiday training and validation <-- current (return result for performanceTest)
 6) custom env to provide returns array via info for performanceTest
 7) check if underfit or overfit model
 8) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
@@ -298,9 +371,11 @@ what is the key outcome?
 '''
 if __name__ == "__main__":
 
-    #bulkDownload('2019-03-17', 4)
+    # bulkDownload('2019-03-21', 4)
     trainMLModel()
-    # results = evaluateMLModel()
+
+    # exactly the same steps as trainMLModel but without saving while loading trained model
+    #results = evaluateMLModel()
     # performanceTest(results)
 
     # automateTrading()
