@@ -10,7 +10,7 @@ class CustomEnv():
         # initial balance
         self.balance = 1000
         self.actionSpace = 4  # buy, hold, sell, close
-        self.observationSpace = len(dataframe.columns)  # ohlcv 5
+        self.observationSpace = len(dataframe.columns)+1  # ohlcv + net position aka longshortflag
         self.indexPointer = 0
         self.positions = deque()
         self.fxRate = 1.36
@@ -21,38 +21,14 @@ class CustomEnv():
 
 
     def step(self, action):
-        """
 
-        Parameters
-        ----------
-        action :
-
-        Returns
-        -------
-        ob, reward, episode_over, info : tuple
-            ob (object) :
-                an environment-specific object representing your observation of
-                the environment.
-            reward (float) :
-                amount of reward achieved by the previous action. The scale
-                varies between environments, but the goal is always to increase
-                your total reward.
-            episode_over (bool) :
-                whether it's time to reset the environment again. Most (but not
-                all) tasks are divided up into well-defined episodes, and done
-                being True indicates the episode has terminated. (For example,
-                perhaps the pole tipped too far, or you lost your last life.)
-            info (dict) :
-                 diagnostic information useful for debugging. It can sometimes
-                 be useful for learning (for example, it might contain the raw
-                 probabilities behind the environment's last state change).
-                 However, official evaluations of your agent are not allowed to
-                 use this for learning.
-        """
         self._take_action(action)
-        reward = self._get_reward()  # reward engineering is reward balance?
+
+        # reward engineering is reward balance?
+        reward = self._get_reward()
         ob = self._getState()
-        # done when account blowup, reached eod
+
+        # done when account blowup or reached eod
         episode_over = self.balance <= 0 or self.indexPointer == len(self.dataframe.index)-1
         return ob, reward, episode_over, {}
 

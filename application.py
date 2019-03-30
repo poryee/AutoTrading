@@ -61,8 +61,6 @@ def getHistoricalData(specificDate):
     response = ig_service.fetch_historical_prices_by_epic_and_date_range(epic, resolution, startDate, endDate)
     return response['prices']
 
-
-
 def bulkDownload(date, numberOfDays):
     specificDate = datetime.strptime(date, '%Y-%m-%d')
 
@@ -73,10 +71,6 @@ def bulkDownload(date, numberOfDays):
             saveSpecificDate(pastData,specificDate)
         specificDate -= timedelta(days=1)
 
-
-
-
-
 def getAverage(dataArray):
     tempList = []
     for priceObject in dataArray:
@@ -86,7 +80,6 @@ def getAverage(dataArray):
             tempList.append(0)
     return tempList
 
-
 def saveSpecificDate(pastData, date):
     # iterate list of json and average up the results
     pastData['averageOpen'] = getAverage(pastData['openPrice'])
@@ -95,7 +88,6 @@ def saveSpecificDate(pastData, date):
     pastData['averageClose'] = getAverage(pastData['closePrice'])
 
     pastData.to_csv("data/"+str(date.date())+".csv")
-
 
 # construct stochastic indicator to determine momentum in direction using (formula is just highest high - close/ highest high - lowest low)* 100 to get percentage
 def constructIndicator(pastData):
@@ -112,9 +104,6 @@ def constructIndicator(pastData):
     pastData['%K'] = ((pastData['averageClose'] - pastData['lowestLow']) / (
         pastData['highestHigh'] - pastData['lowestLow'])) * 100
 
-
-    # save so we can retrain model using most recent data
-    #pastData.to_csv("yahoo_finance\\30Min.csv", sep=',', encoding='utf-8')
 
     # Create the "%D" column in the DataFrame moving average of calculated K
     pastData['%D'] = pastData['%K'].rolling(window=3).mean()
@@ -133,47 +122,6 @@ def constructIndicator(pastData):
     return pastData
     # consider building other indicator
 
-
-
-# prints formatted price
-def formatPrice(n):
-    return ("-$" if n < 0 else "$") + "{0:.2f}".format(abs(n))
-
-# returns the vector containing stock data from a fixed file
-def getStockClosingDataVec(key):
-    vec = []
-    lines = open("yahoo_finance/" + key + ".csv", "r").read().splitlines()
-
-    # ignore header
-    for line in lines[1:]:
-        # append closing price into list
-        vec.append(float(line.split(",")[4]))
-
-    return vec
-
-# returns the sigmoid
-def sigmoid(gamma):
-    if gamma < 0:
-        return 1 - 1 / (1 + math.exp(gamma))
-    return 1 / (1 + math.exp(-gamma))
-
-    # return 1 / (1 + math.exp(-x))
-
-# returns an an n-day state representation ending at time t
-def getState(data, t, n):
-    d = t - n + 1
-    block = data[d:t + 1] if d >= 0 else -d * [data[0]] + data[0:t + 1]  # pad with t0
-    res = []
-    for i in range(n - 1):
-        res.append(sigmoid(block[i + 1] - block[i]))
-
-
-    return np.array([res])
-
-
-
-
-
 # measure and evaluate system developed
 def performanceTest(returns):
     # Calmar
@@ -190,8 +138,6 @@ def performanceTest(returns):
     riskFreeRate = 0.06
 
     print("Calmar Ratio =", calmar_ratio(averageExpectedReturn, returns, riskFreeRate))
-
-
 
 def trainMLModel():
     # retrieve data
@@ -216,7 +162,7 @@ def trainMLModel():
     # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env=CustomEnv(pastDataAsState.loc['2019-02-19'])
+    env=CustomEnv(pastDataAsState.loc['2019-02-14'])
 
     dqn = torchDQN()
     total_reward = []
@@ -269,8 +215,21 @@ def trainMLModel():
     plt.show()
     dqn.save()
 
+def visualise(dataframe, total_action):
+    dataframe.plot(y="averageClose")
+    buyTime, buyPrice, sellTime, sellPrice=[], [], [], []
+    for index,action in enumerate(total_action):
+        if(action==0):
+            buyTime.append(dataframe.index[index])
+            buyPrice.append(dataframe.averageClose[index])
+        elif action==2:
+            sellTime.append(dataframe.index[index])
+            sellPrice.append(dataframe.averageClose[index])
 
-def evaluateMLModel():
+    plt.scatter(buyTime, buyPrice, c='g', marker="^", s=25)
+    plt.scatter(sellTime, sellPrice, c='r', marker="v", s=25)
+    plt.show()
+def evaluateMLModel(showChart=False):
     allFiles = glob.glob("data/*.csv")
 
     list_ = []
@@ -292,23 +251,25 @@ def evaluateMLModel():
     # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env=CustomEnv(pastDataAsState.loc['2019-02-20'])
+    env=CustomEnv(pastDataAsState.loc['2019-02-15'])
 
     dqn = torchDQN()
-    total_reward = []
-    total_action = []
+    totalReward = []
+    totalAction = []
     print('\nCollecting experience...')
-    # trade the same day 400 times
-    for i_episode in range(400):
+
+    # trade the same day 10 times
+    for i_episode in range(100):
         s = env.reset()
         ep_r = 0
+        episodeAction = []
         while True:
             #env.render()
             # see how random trading with 2:1 RRR will perform
             # a = np.random.randint(0, 4)
 
             a = dqn.choose_action(s)
-            total_action.append(a)
+            episodeAction.append(a)
             # take action
             s_, r, done, info = env.step(a)
 
@@ -330,17 +291,22 @@ def evaluateMLModel():
             if done:
                 print('Ep: ', i_episode, '| Ep_r: ', round(r, 2))
                 ep_r = r
+                if(ep_r>=1000 & showChart==True):
+                    visualise(env.dataframe,episodeAction)
+
                 break
             s = s_
-        total_reward.append(ep_r)
+        # collect stats
+        totalReward.append(ep_r)
+        totalAction.extend(episodeAction)
 
-    counter=collections.Counter(total_action)
+    counter=collections.Counter(totalAction)
     print("total unique action ", print(counter))
 
     plt.title('Reward')
     plt.xlabel('No of Episodes')
     plt.ylabel('Total reward')
-    plt.plot(np.arange(len(total_reward)), total_reward, 'r-', lw=5)
+    plt.plot(np.arange(len(totalReward)), totalReward, 'r-', lw=5)
 
     plt.show()
 
@@ -372,10 +338,10 @@ what is the key outcome?
 if __name__ == "__main__":
 
     # bulkDownload('2019-03-21', 4)
-    trainMLModel()
+    # trainMLModel()
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    #results = evaluateMLModel()
+    results = evaluateMLModel()
     # performanceTest(results)
 
     # automateTrading()

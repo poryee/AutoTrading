@@ -59,6 +59,9 @@ class Net(nn.Module):
 class torchDQN(object):
     def __init__(self):
 
+
+
+        # normal dqn sequential
         '''
         self.eval_net = torch.nn.Sequential(
             torch.nn.Linear(N_STATES, 50),  # 50 is number of dense layer out
