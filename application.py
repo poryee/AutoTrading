@@ -51,34 +51,37 @@ def getHistoricalData(specificDate):
 
 
     # (yyyy:MM:dd-HH:mm:ss)
-    #today = datetime.today()
+    # today = datetime.today()
     #startDate = str(today.date() - timedelta(days=2)).replace("-", ":") + "-00:00:00"
     #endDate = str(today.date() - timedelta(days=0)).replace("-", ":") + "-00:00:00"
 
-    startDate = specificDate.date().strftime('%Y:%m:%d')+"-00:00:00"
-    endDate = (specificDate + timedelta(days=1)).date().strftime('%Y:%m:%d')+"-23:55:00"
+    startDate = specificDate.date().strftime('%Y:%m:%d') + "-00:00:00"
+    endDate = (specificDate + timedelta(days=1)).date().strftime('%Y:%m:%d') + "-23:55:00"
 
     response = ig_service.fetch_historical_prices_by_epic_and_date_range(epic, resolution, startDate, endDate)
     return response['prices']
+
 
 def bulkDownload(date, numberOfDays):
     specificDate = datetime.strptime(date, '%Y-%m-%d')
 
     # 10 days
     for i in range(numberOfDays):
-        if(specificDate.weekday()!=6):
+        if (specificDate.weekday() != 6):
             pastData = getHistoricalData(specificDate)
-            saveSpecificDate(pastData,specificDate)
+            saveSpecificDate(pastData, specificDate)
         specificDate -= timedelta(days=1)
+
 
 def getAverage(dataArray):
     tempList = []
     for priceObject in dataArray:
-        if(priceObject['bid']!=None and priceObject['ask']!=None):
-            tempList.append(round((priceObject['ask'] + priceObject['bid']) / 2,2))
+        if (priceObject['bid'] != None and priceObject['ask'] != None):
+            tempList.append(round((priceObject['ask'] + priceObject['bid']) / 2, 2))
         else:
             tempList.append(0)
     return tempList
+
 
 def saveSpecificDate(pastData, date):
     # iterate list of json and average up the results
@@ -87,7 +90,8 @@ def saveSpecificDate(pastData, date):
     pastData['averageHigh'] = getAverage(pastData['highPrice'])
     pastData['averageClose'] = getAverage(pastData['closePrice'])
 
-    pastData.to_csv("data/"+str(date.date())+".csv")
+    pastData.to_csv("data/" + str(date.date()) + ".csv")
+
 
 # construct stochastic indicator to determine momentum in direction using (formula is just highest high - close/ highest high - lowest low)* 100 to get percentage
 def constructIndicator(pastData):
@@ -122,6 +126,7 @@ def constructIndicator(pastData):
     return pastData
     # consider building other indicator
 
+
 # measure and evaluate system developed
 def performanceTest(returns):
     # Calmar
@@ -139,20 +144,22 @@ def performanceTest(returns):
 
     print("Calmar Ratio =", calmar_ratio(averageExpectedReturn, returns, riskFreeRate))
 
+
 def trainMLModel():
     # retrieve data
     allFiles = glob.glob("data/*.csv")
 
     list_ = []
     for file_ in allFiles:
-        df = pd.read_csv(file_,sep=',',index_col=0, header=0)
+        df = pd.read_csv(file_, sep=',', index_col=0, header=0)
         list_.append(df)
     # concatenate every row in the list and reset index to sequential
-    pastData = pd.concat(list_, axis = 0, ignore_index = True)
+    pastData = pd.concat(list_, axis=0, ignore_index=True)
 
 
     # setsnapshotTime as index
-    pastDataAsState = pastData[['snapshotTime','averageOpen','averageHigh','averageLow','averageClose','lastTradedVolume']]
+    pastDataAsState = pastData[
+        ['snapshotTime', 'averageOpen', 'averageHigh', 'averageLow', 'averageClose', 'lastTradedVolume']]
     pastDataAsState.snapshotTime = pd.to_datetime(pastData['snapshotTime'], format='%Y:%m:%d-%H:%M:%S')
     pastDataAsState.set_index('snapshotTime', inplace=True)
     print(pastDataAsState.head())
@@ -162,7 +169,7 @@ def trainMLModel():
     # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env=CustomEnv(pastDataAsState.loc['2019-02-14'])
+    env = CustomEnv(pastDataAsState.loc['2019-02-14'])
 
     dqn = torchDQN()
     total_reward = []
@@ -173,7 +180,7 @@ def trainMLModel():
         s = env.reset()
         ep_r = 0
         while True:
-            #env.render()
+            # env.render()
             # see how random trading with 2:1 RRR will perform
             # a = np.random.randint(0, 4)
 
@@ -204,7 +211,7 @@ def trainMLModel():
             s = s_
         total_reward.append(ep_r)
 
-    counter=collections.Counter(total_action)
+    counter = collections.Counter(total_action)
     print("total unique action ", print(counter))
 
     plt.title('Reward')
@@ -215,33 +222,43 @@ def trainMLModel():
     plt.show()
     dqn.save()
 
-def visualise(dataframe, total_action):
-    dataframe.plot(y="averageClose")
-    buyTime, buyPrice, sellTime, sellPrice=[], [], [], []
-    for index,action in enumerate(total_action):
-        if(action==0):
+
+def visualise(dataframe, episodeAction, episodeReward):
+
+    fig, (ax1, ax2) = plt.subplots(2, 1,figsize=(15,15))
+
+    dataframe.plot(y="averageClose", ax=ax1)
+    buyTime, buyPrice, sellTime, sellPrice = [], [], [], []
+    for index, action in enumerate(episodeAction):
+        if (action == 0):
             buyTime.append(dataframe.index[index])
             buyPrice.append(dataframe.averageClose[index])
-        elif action==2:
+        elif action == 2:
             sellTime.append(dataframe.index[index])
             sellPrice.append(dataframe.averageClose[index])
 
-    plt.scatter(buyTime, buyPrice, c='g', marker="^", s=25)
-    plt.scatter(sellTime, sellPrice, c='r', marker="v", s=25)
+    ax1.scatter(buyTime, buyPrice, c='g', marker="^", s=25)
+    ax1.scatter(sellTime, sellPrice, c='r', marker="v", s=25)
+
+    ax2.plot(episodeReward)
+    fig.subplots_adjust(hspace=1)
+
     plt.show()
+
 def evaluateMLModel(showChart=False):
     allFiles = glob.glob("data/*.csv")
 
     list_ = []
     for file_ in allFiles:
-        df = pd.read_csv(file_,sep=',',index_col=0, header=0)
+        df = pd.read_csv(file_, sep=',', index_col=0, header=0)
         list_.append(df)
     # concatenate every row in the list and reset index to sequential
-    pastData = pd.concat(list_, axis = 0, ignore_index = True)
+    pastData = pd.concat(list_, axis=0, ignore_index=True)
 
 
     # setsnapshotTime as index
-    pastDataAsState = pastData[['snapshotTime','averageOpen','averageHigh','averageLow','averageClose','lastTradedVolume']]
+    pastDataAsState = pastData[
+        ['snapshotTime', 'averageOpen', 'averageHigh', 'averageLow', 'averageClose', 'lastTradedVolume']]
     pastDataAsState.snapshotTime = pd.to_datetime(pastData['snapshotTime'], format='%Y:%m:%d-%H:%M:%S')
     pastDataAsState.set_index('snapshotTime', inplace=True)
     print(pastDataAsState.head())
@@ -251,7 +268,7 @@ def evaluateMLModel(showChart=False):
     # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env=CustomEnv(pastDataAsState.loc['2019-02-15'])
+    env = CustomEnv(pastDataAsState.loc['2019-02-15'])
 
     dqn = torchDQN()
     totalReward = []
@@ -263,8 +280,9 @@ def evaluateMLModel(showChart=False):
         s = env.reset()
         ep_r = 0
         episodeAction = []
+        episodeReward = [env.balance]
         while True:
-            #env.render()
+            # env.render()
             # see how random trading with 2:1 RRR will perform
             # a = np.random.randint(0, 4)
 
@@ -273,6 +291,9 @@ def evaluateMLModel(showChart=False):
             # take action
             s_, r, done, info = env.step(a)
 
+            # store balance note that reward is balance - initial capital hence 0
+            episodeReward.append(env.balance)
+
             # modify the reward
             # x, x_dot, theta, theta_dot = s_
             # r1 = (env.x_threshold - abs(x)) / env.x_threshold - 0.8
@@ -280,7 +301,7 @@ def evaluateMLModel(showChart=False):
             # r = r1 + r2
 
             dqn.store_transition(s, a, r, s_)
-            ep_r += r
+
 
             # every 10k steps we train our model both eval and target
             if dqn.memory_counter > 10000:
@@ -290,17 +311,16 @@ def evaluateMLModel(showChart=False):
 
             if done:
                 print('Ep: ', i_episode, '| Ep_r: ', round(r, 2))
-                ep_r = r
-                if(ep_r>=1000 & showChart==True):
-                    visualise(env.dataframe,episodeAction)
+                if (r >= 500 and showChart == True):
+                    visualise(env.dataframe, episodeAction, episodeReward)
 
                 break
             s = s_
         # collect stats
-        totalReward.append(ep_r)
+        totalReward.extend(episodeReward)
         totalAction.extend(episodeAction)
 
-    counter=collections.Counter(totalAction)
+    counter = collections.Counter(totalAction)
     print("total unique action ", print(counter))
 
     plt.title('Reward')
@@ -313,14 +333,13 @@ def evaluateMLModel(showChart=False):
     # temporary placeholder for balance
     return True
 
-def automateTrading():
 
+def automateTrading():
     pass
     # pastDataWithIndicator = constructIndicator(pastData)
 
     # using past 20 day data
     # machineLearning(pastData)
-
 
 
 '''
@@ -336,12 +355,11 @@ what is the key outcome?
 
 '''
 if __name__ == "__main__":
-
-    # bulkDownload('2019-03-21', 4)
-    # trainMLModel()
+    # bulkDownload('2019-03-25', 4)
+    #trainMLModel()
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    results = evaluateMLModel()
+    results = evaluateMLModel(showChart=True)
     # performanceTest(results)
 
     # automateTrading()
