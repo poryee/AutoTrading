@@ -169,7 +169,7 @@ def trainMLModel():
     # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env = CustomEnv(pastDataAsState.loc['2019-02-14'])
+    env = CustomEnv(pastDataAsState.loc['2019-02-15'])
 
     dqn = torchDQN()
     total_reward = []
@@ -262,13 +262,9 @@ def evaluateMLModel(showChart=False):
     pastDataAsState.snapshotTime = pd.to_datetime(pastData['snapshotTime'], format='%Y:%m:%d-%H:%M:%S')
     pastDataAsState.set_index('snapshotTime', inplace=True)
     print(pastDataAsState.head())
-    # print(pastDataAsState.info())
-    # asd=pastDataAsState.iloc[0,:]
-    # print(pastDataAsState.loc['2019-02-01'])
-    # print(type(pastDataAsState.loc['2019-02-01']))
 
     # initialise gym environment with single day slice of past data
-    env = CustomEnv(pastDataAsState.loc['2019-02-15'])
+    env = CustomEnv(pastDataAsState.loc['2019-02-16'])
 
     dqn = torchDQN()
     totalReward = []
@@ -278,13 +274,12 @@ def evaluateMLModel(showChart=False):
     # trade the same day 10 times
     for i_episode in range(100):
         s = env.reset()
-        ep_r = 0
         episodeAction = []
         episodeReward = [env.balance]
         while True:
             # env.render()
             # see how random trading with 2:1 RRR will perform
-            # a = np.random.randint(0, 4)
+            #a = np.random.randint(0, 4)
 
             a = dqn.choose_action(s)
             episodeAction.append(a)
@@ -294,24 +289,11 @@ def evaluateMLModel(showChart=False):
             # store balance note that reward is balance - initial capital hence 0
             episodeReward.append(env.balance)
 
-            # modify the reward
-            # x, x_dot, theta, theta_dot = s_
-            # r1 = (env.x_threshold - abs(x)) / env.x_threshold - 0.8
-            # r2 = (env.theta_threshold_radians - abs(theta)) / env.theta_threshold_radians - 0.5
-            # r = r1 + r2
-
-            dqn.store_transition(s, a, r, s_)
-
-
-            # every 10k steps we train our model both eval and target
-            if dqn.memory_counter > 10000:
-                # but target updates at a slower rate so learning is more stable
-                # think of eval as the hyper active child and target as the parent that critics the child exploration
-                dqn.learn()
+            # no training for evaluation
 
             if done:
                 print('Ep: ', i_episode, '| Ep_r: ', round(r, 2))
-                if (r >= 500 and showChart == True):
+                if (showChart == True):
                     visualise(env.dataframe, episodeAction, episodeReward)
 
                 break
@@ -328,6 +310,10 @@ def evaluateMLModel(showChart=False):
     plt.ylabel('Total reward')
     plt.plot(np.arange(len(totalReward)), totalReward, 'r-', lw=5)
 
+    # Calculate the simple average of the rewards
+    yMean = [np.mean(totalReward)]*len(totalReward)
+    plt.plot(yMean, label='Mean', linestyle='--')
+    plt.text(1, yMean[0], "Average Returns: {:.3f}".format(yMean[0]))
     plt.show()
 
     # temporary placeholder for balance
@@ -355,11 +341,11 @@ what is the key outcome?
 
 '''
 if __name__ == "__main__":
-    # bulkDownload('2019-03-25', 4)
+    #bulkDownload('2019-03-29', 4)
     #trainMLModel()
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    results = evaluateMLModel(showChart=True)
+    results = evaluateMLModel(showChart=False)
     # performanceTest(results)
 
     # automateTrading()
