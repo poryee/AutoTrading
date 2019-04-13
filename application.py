@@ -145,10 +145,12 @@ def performanceTest(returns):
     print("Calmar Ratio =", calmar_ratio(averageExpectedReturn, returns, riskFreeRate))
 
 
-def trainMLModel():
-    # retrieve data
+# retrieve all downloaded data concatenated in dataframe
+def retrievePastDataDataframe():
+    # retrieve all csv in data folder
     allFiles = glob.glob("data/*.csv")
 
+    # concat csv
     list_ = []
     for file_ in allFiles:
         df = pd.read_csv(file_, sep=',', index_col=0, header=0)
@@ -156,27 +158,75 @@ def trainMLModel():
     # concatenate every row in the list and reset index to sequential
     pastData = pd.concat(list_, axis=0, ignore_index=True)
 
-
     # setsnapshotTime as index
     pastDataAsState = pastData[
         ['snapshotTime', 'averageOpen', 'averageHigh', 'averageLow', 'averageClose', 'lastTradedVolume']]
     pastDataAsState.snapshotTime = pd.to_datetime(pastData['snapshotTime'], format='%Y:%m:%d-%H:%M:%S')
     pastDataAsState.set_index('snapshotTime', inplace=True)
-    print(pastDataAsState.head())
+
     # print(pastDataAsState.info())
     # asd=pastDataAsState.iloc[0,:]
     # print(pastDataAsState.loc['2019-02-01'])
     # print(type(pastDataAsState.loc['2019-02-01']))
 
-    # initialise gym environment with single day slice of past data
-    env = CustomEnv(pastDataAsState.loc['2019-02-15'])
+    return pastDataAsState
+
+
+def visualise(dataframe, episodeAction, episodeReward):
+
+    fig, (ax1, ax2) = plt.subplots(2, 1,figsize=(15,15))
+
+    dataframe.plot(y="averageClose", ax=ax1)
+    buyTime, buyPrice, sellTime, sellPrice = [], [], [], []
+    for index, action in enumerate(episodeAction):
+        if (action == 0):
+            buyTime.append(dataframe.index[index])
+            buyPrice.append(dataframe.averageClose[index])
+        elif action == 2:
+            sellTime.append(dataframe.index[index])
+            sellPrice.append(dataframe.averageClose[index])
+
+    ax1.scatter(buyTime, buyPrice, c='g', marker="^", s=25)
+    ax1.scatter(sellTime, sellPrice, c='r', marker="v", s=25)
+
+    ax2.plot(episodeReward)
+    fig.subplots_adjust(hspace=1)
+
+    plt.show()
+
+
+def trainMLModel(endDate, trainingDays, totalEpisodes):
+
+    # retrieve pastdata
+    pastDataAsState = retrievePastDataDataframe()
 
     dqn = torchDQN()
     total_reward = []
     total_action = []
+
+
+    endDate = datetime.strptime(endDate, '%Y-%m-%d')
+
+    # because we want to include endDate in the training hence -1
+    traingDate = endDate-timedelta(days=trainingDays-1)
+
+    # so we end up with largest quotient when dividing totalEpisodes with trainingDays so we end training on endDate
+    trainingEpisode=(totalEpisodes//trainingDays)*trainingDays
+
+
     print('\nCollecting experience...')
-    # trade the same day 400 times
-    for i_episode in range(400):
+    for i_episode in range(trainingEpisode):
+        if(i_episode%(trainingDays)==0):
+            # because we want to include endDate in the training hence -1
+            traingDate = endDate-timedelta(days=trainingDays-1)
+        if(traingDate.date().strftime('%Y-%m-%d') not in pastDataAsState.index):
+            traingDate+=timedelta(days=1)
+            continue
+
+        # initialise gym environment with single day slice of past data
+        env = CustomEnv(pastDataAsState.loc[traingDate.date().strftime('%Y-%m-%d')])
+
+        # multiday training do we reset the balance?
         s = env.reset()
         ep_r = 0
         while True:
@@ -205,66 +255,35 @@ def trainMLModel():
                 dqn.learn()
 
             if done:
-                print('Ep: ', i_episode, '| Ep_r: ', round(r, 2))
+                print('Ep: ', i_episode, '| Training Date: ',traingDate.date().strftime('%Y-%m-%d'), '| Ep_r: ', round(r, 2))
                 ep_r = r
                 break
             s = s_
+
         total_reward.append(ep_r)
+        traingDate+=timedelta(days=1)
 
     counter = collections.Counter(total_action)
     print("total unique action ", print(counter))
 
+    # display visualisation of training result
     plt.title('Reward')
     plt.xlabel('No of Episodes')
     plt.ylabel('Total reward')
     plt.plot(np.arange(len(total_reward)), total_reward, 'r-', lw=5)
-
     plt.show()
+
+    # save trained model
     dqn.save()
 
 
-def visualise(dataframe, episodeAction, episodeReward):
+def evaluateMLModel(evalutionDate, showChart=False):
 
-    fig, (ax1, ax2) = plt.subplots(2, 1,figsize=(15,15))
-
-    dataframe.plot(y="averageClose", ax=ax1)
-    buyTime, buyPrice, sellTime, sellPrice = [], [], [], []
-    for index, action in enumerate(episodeAction):
-        if (action == 0):
-            buyTime.append(dataframe.index[index])
-            buyPrice.append(dataframe.averageClose[index])
-        elif action == 2:
-            sellTime.append(dataframe.index[index])
-            sellPrice.append(dataframe.averageClose[index])
-
-    ax1.scatter(buyTime, buyPrice, c='g', marker="^", s=25)
-    ax1.scatter(sellTime, sellPrice, c='r', marker="v", s=25)
-
-    ax2.plot(episodeReward)
-    fig.subplots_adjust(hspace=1)
-
-    plt.show()
-
-def evaluateMLModel(showChart=False):
-    allFiles = glob.glob("data/*.csv")
-
-    list_ = []
-    for file_ in allFiles:
-        df = pd.read_csv(file_, sep=',', index_col=0, header=0)
-        list_.append(df)
-    # concatenate every row in the list and reset index to sequential
-    pastData = pd.concat(list_, axis=0, ignore_index=True)
-
-
-    # setsnapshotTime as index
-    pastDataAsState = pastData[
-        ['snapshotTime', 'averageOpen', 'averageHigh', 'averageLow', 'averageClose', 'lastTradedVolume']]
-    pastDataAsState.snapshotTime = pd.to_datetime(pastData['snapshotTime'], format='%Y:%m:%d-%H:%M:%S')
-    pastDataAsState.set_index('snapshotTime', inplace=True)
-    print(pastDataAsState.head())
+   # retrieve past data
+    pastDataAsState = retrievePastDataDataframe()
 
     # initialise gym environment with single day slice of past data
-    env = CustomEnv(pastDataAsState.loc['2019-02-16'])
+    env = CustomEnv(pastDataAsState.loc[evalutionDate])
 
     dqn = torchDQN()
     totalReward = []
@@ -341,11 +360,11 @@ what is the key outcome?
 
 '''
 if __name__ == "__main__":
-    #bulkDownload('2019-03-29', 4)
-    #trainMLModel()
+    # bulkDownload('2019-04-6', 4)
+    #trainMLModel(endDate='2019-04-2', trainingDays=14, totalEpisodes=800)
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    results = evaluateMLModel(showChart=False)
+    results = evaluateMLModel('2019-04-03')
     # performanceTest(results)
 
     # automateTrading()
