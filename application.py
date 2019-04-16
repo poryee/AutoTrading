@@ -322,7 +322,6 @@ def evaluateMLModel(evalutionDate, showChart=False):
         totalAction.extend(episodeAction)
 
     counter = collections.Counter(totalAction)
-    print("total unique action ", print(counter))
 
     plt.title('Reward')
     plt.xlabel('No of Episodes')
@@ -353,18 +352,19 @@ what is the key outcome?
 2) robust when back tested against historical data 2 month <-- Done
 3) automate trade demo using model and algorithm (completed custom gym environment for agent to interact with based on ig dow jones data in 5min resolution)
 4) unrealised profit or loss into state & new action close position <-- Done
-5) Multiday training and validation <-- current (return result for performanceTest)
-6) custom env to provide returns array via info for performanceTest
-7) check if underfit or overfit model
-8) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
-
+5) Multiday training and validation <-- Done looks good 1.4k gains from 25points sl 50tp 2:1 RRR (experiment different training length 1week 2week 3week, and steps)
+6) resample to high time frame for evaluation (Check if need to do that for training as well) <-- (so that we don't have to trade that late at night)
+7) custom env to provide returns array via info for performanceTest (Optimise hyper param)
+8) check if underfit or overfit model
+9) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
+10) check for shitty data 0.0,0.0,0.0,0.0 ctrl+shift+f
 '''
 if __name__ == "__main__":
-    # bulkDownload('2019-04-6', 4)
-    #trainMLModel(endDate='2019-04-2', trainingDays=14, totalEpisodes=800)
+    #bulkDownload('2019-04-10', 4)
+    #trainMLModel(endDate='2019-04-9', trainingDays=14, totalEpisodes=400)
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    results = evaluateMLModel('2019-04-03')
+    results = evaluateMLModel('2019-04-10')
     # performanceTest(results)
 
     # automateTrading()
