@@ -16,7 +16,7 @@ class CustomEnv():
         self.fxRate = 1.36
         self.lotSize = 0.1
         self.stopLoss = 25
-        self.takeProfit = 50
+        self.takeProfit = 25
         self.longShortFlag = 0  # neutral 0 long 1 short -1
 
 
@@ -110,9 +110,9 @@ class CustomEnv():
             for position in self.positions:
                 # close position
                 if self.longShortFlag==1:
-                    self.balance += (newState[3] - position) # 11 - 12
+                    self.balance += (newState[0] - position) * self.fxRate * self.lotSize # 11 - 12
                 elif self.longShortFlag ==-1:
-                    self.balance += (position - newState[3]) # 12 - 11
+                    self.balance += (position - newState[0]) * self.fxRate * self.lotSize # 12 - 11
 
             # clear all position leaving length to 0
             self.positions.clear()

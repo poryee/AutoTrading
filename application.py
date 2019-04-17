@@ -286,7 +286,7 @@ def evaluateMLModel(evalutionDate, showChart=False):
     env = CustomEnv(pastDataAsState.loc[evalutionDate])
 
     dqn = torchDQN()
-    totalReward = []
+    totalFinalReward = []
     totalAction = []
     print('\nCollecting experience...')
 
@@ -294,11 +294,11 @@ def evaluateMLModel(evalutionDate, showChart=False):
     for i_episode in range(100):
         s = env.reset()
         episodeAction = []
-        episodeReward = [env.balance]
+        episodeBalance = [env.balance]
         while True:
             # env.render()
             # see how random trading with 2:1 RRR will perform
-            #a = np.random.randint(0, 4)
+            # a = np.random.randint(0, 4)
 
             a = dqn.choose_action(s)
             episodeAction.append(a)
@@ -306,34 +306,36 @@ def evaluateMLModel(evalutionDate, showChart=False):
             s_, r, done, info = env.step(a)
 
             # store balance note that reward is balance - initial capital hence 0
-            episodeReward.append(env.balance)
+            episodeBalance.append(env.balance)
 
             # no training for evaluation
 
             if done:
                 print('Ep: ', i_episode, '| Ep_r: ', round(r, 2))
                 if (showChart == True):
-                    visualise(env.dataframe, episodeAction, episodeReward)
+                    visualise(env.dataframe, episodeAction, episodeBalance)
 
                 break
             s = s_
         # collect stats
-        totalReward.extend(episodeReward)
+        totalFinalReward.append(r)
         totalAction.extend(episodeAction)
 
     counter = collections.Counter(totalAction)
 
     plt.title('Reward')
     plt.xlabel('No of Episodes')
-    plt.ylabel('Total reward')
-    plt.plot(np.arange(len(totalReward)), totalReward, 'r-', lw=5)
+    plt.ylabel('Total Final Reward')
+    plt.plot(np.arange(len(totalFinalReward)), totalFinalReward, 'r-', lw=5)
 
     # Calculate the simple average of the rewards
-    yMean = [np.mean(totalReward)]*len(totalReward)
+    yMean = [np.mean(totalFinalReward)]*len(totalFinalReward)
     plt.plot(yMean, label='Mean', linestyle='--')
     plt.text(1, yMean[0], "Average Returns: {:.3f}".format(yMean[0]))
     plt.show()
 
+    winloseRatio=len(list(filter(lambda x: x > 0, totalFinalReward)))/len(totalFinalReward)
+    print(winloseRatio)
     # temporary placeholder for balance
     return True
 
@@ -360,12 +362,12 @@ what is the key outcome?
 10) check for shitty data 0.0,0.0,0.0,0.0 ctrl+shift+f
 '''
 if __name__ == "__main__":
-    #bulkDownload('2019-04-10', 4)
+    #bulkDownload('2019-04-14', 4)
     #trainMLModel(endDate='2019-04-9', trainingDays=14, totalEpisodes=400)
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
     results = evaluateMLModel('2019-04-10')
-    # performanceTest(results)
+    # performanceTest(results)list(filter(lambda x: x >0, nums))
 
     # automateTrading()
     # TODO after all is set and done final todo is to use it on CFD account

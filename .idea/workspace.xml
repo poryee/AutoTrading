@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d037fefe-3550-419b-9e75-54f9ab97efe4" name="Default" comment="lookin">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data/2019-04-08.csv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data/2019-04-09.csv" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/data/2019-04-10.csv" />
+    <list default="true" id="d037fefe-3550-419b-9e75-54f9ab97efe4" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application.py" afterPath="$PROJECT_DIR$/application.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mlcore/custom_gym.py" afterPath="$PROJECT_DIR$/mlcore/custom_gym.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="98dc9ae2-2a21-41ee-bcc5-14f0f2d40153" name="ignorelist" comment="ignorelist" />
@@ -34,8 +32,8 @@
       <file leaf-file-name="application.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/application.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.63309354" vertical-offset="1719" max-vertical-offset="2533">
-              <caret line="354" column="163" selection-start-line="354" selection-start-column="163" selection-end-line="354" selection-end-column="163" />
+            <state vertical-scroll-proportion="0.9294964" vertical-offset="2482" max-vertical-offset="3910">
+              <caret line="332" column="49" selection-start-line="332" selection-start-column="49" selection-end-line="332" selection-end-column="49" />
               <folding>
                 <element signature="e#592#2004#0" expanded="false" />
                 <element signature="e#2049#2340#0" expanded="false" />
@@ -45,7 +43,18 @@
                 <element signature="e#4603#5133#0" expanded="false" />
                 <element signature="e#5230#6115#0" expanded="false" />
                 <element signature="e#6179#6864#0" expanded="false" />
-                <element signature="e#6928#9710#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rl_agent.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mlcore/rl_agent.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1418" max-vertical-offset="2601">
+              <caret line="97" column="8" selection-start-line="97" selection-start-column="8" selection-end-line="97" selection-end-column="8" />
+              <folding>
+                <element signature="e#0#12#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -54,8 +63,8 @@
       <file leaf-file-name="2019-04-10.csv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data/2019-04-10.csv">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1337" max-vertical-offset="9877">
-              <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="969" max-vertical-offset="9877">
+              <caret line="59" column="135" selection-start-line="59" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -64,7 +73,7 @@
       <file leaf-file-name="2019-04-09.csv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data/2019-04-09.csv">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.3103447" vertical-offset="6243" max-vertical-offset="9894">
+            <state vertical-scroll-proportion="0.0" vertical-offset="6426" max-vertical-offset="9894">
               <caret line="378" column="0" selection-start-line="378" selection-start-column="0" selection-end-line="378" selection-end-column="0" />
               <folding />
             </state>
@@ -74,7 +83,7 @@
       <file leaf-file-name="2019-04-08.csv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data/2019-04-08.csv">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-20.0" vertical-offset="8005" max-vertical-offset="8687">
+            <state vertical-scroll-proportion="0.0" vertical-offset="8585" max-vertical-offset="8687">
               <caret line="505" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="505" selection-end-column="0" />
               <folding />
             </state>
@@ -84,18 +93,8 @@
       <file leaf-file-name="2019-04-06.csv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data/2019-04-06.csv">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="204" max-vertical-offset="1139">
+            <state vertical-scroll-proportion="0.0" vertical-offset="68" max-vertical-offset="1139">
               <caret line="4" column="54" selection-start-line="4" selection-start-column="54" selection-end-line="4" selection-end-column="54" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="2019-04-05.csv" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data/2019-04-05.csv">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6018">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -104,7 +103,7 @@
       <file leaf-file-name="2019-04-04.csv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data/2019-04-04.csv">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="9212" max-vertical-offset="9894">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="9894">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -114,7 +113,7 @@
       <file leaf-file-name="2019-04-03.csv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data/2019-04-03.csv">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="9229" max-vertical-offset="9911">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="9911">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -124,7 +123,7 @@
       <file leaf-file-name="2019-04-01.csv" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/data/2019-04-01.csv">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="8005" max-vertical-offset="8687">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="8687">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
@@ -134,8 +133,8 @@
       <file leaf-file-name="custom_gym.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mlcore/custom_gym.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1168" max-vertical-offset="2295">
-              <caret line="31" column="61" selection-start-line="31" selection-start-column="49" selection-end-line="31" selection-end-column="61" />
+            <state vertical-scroll-proportion="-8.655172" vertical-offset="55" max-vertical-offset="2295">
+              <caret line="18" column="28" selection-start-line="18" selection-start-column="28" selection-end-line="18" selection-end-column="28" />
               <folding>
                 <element signature="e#18#47#0" expanded="true" />
               </folding>
@@ -168,12 +167,12 @@
         <option value="$PROJECT_DIR$/mlcore/test4.py" />
         <option value="$PROJECT_DIR$/mlcore/test3.py" />
         <option value="$PROJECT_DIR$/risk_adjusted_metrics.py" />
-        <option value="$PROJECT_DIR$/mlcore/custom_gym.py" />
         <option value="$PROJECT_DIR$/mlcore/rl_agent.py" />
         <option value="$PROJECT_DIR$/mlcore/test2.py" />
         <option value="$PROJECT_DIR$/data/2019-04-09.csv" />
         <option value="$PROJECT_DIR$/data/2019-04-10.csv" />
         <option value="$PROJECT_DIR$/application.py" />
+        <option value="$PROJECT_DIR$/mlcore/custom_gym.py" />
       </list>
     </option>
   </component>
@@ -357,6 +356,25 @@
       <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
+    <configuration default="false" name="custom_gym" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/mlcore" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="ig basic" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/mlcore/custom_gym.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <RunnerSettings RunnerId="PyDebugRunner" />
+      <ConfigurationWrapper RunnerId="PyDebugRunner" />
+      <method />
+    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -500,17 +518,19 @@
       <ConfigurationWrapper RunnerId="PythonRunner" />
       <method />
     </configuration>
-    <list size="4">
+    <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.application" />
       <item index="1" class="java.lang.String" itemvalue="Python.test" />
       <item index="2" class="java.lang.String" itemvalue="Python.test2" />
       <item index="3" class="java.lang.String" itemvalue="Python.test3" />
+      <item index="4" class="java.lang.String" itemvalue="Python.custom_gym" />
     </list>
     <recent_temporary>
-      <list size="3">
-        <item index="0" class="java.lang.String" itemvalue="Python.test3" />
-        <item index="1" class="java.lang.String" itemvalue="Python.test2" />
-        <item index="2" class="java.lang.String" itemvalue="Python.test" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Python.custom_gym" />
+        <item index="1" class="java.lang.String" itemvalue="Python.test3" />
+        <item index="2" class="java.lang.String" itemvalue="Python.test2" />
+        <item index="3" class="java.lang.String" itemvalue="Python.test" />
       </list>
     </recent_temporary>
   </component>
@@ -706,7 +726,13 @@
       <option name="project" value="LOCAL" />
       <updated>1555174942641</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="multiday seems legit now will test awhile more to see if stable then explore different training duration and steps">
+      <created>1555433131143</created>
+      <option name="number" value="00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1555433131143</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -730,18 +756,18 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33225107" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21753247" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21753247" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41558442" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32946146" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21753247" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18335089" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18335089" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32792208" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
@@ -754,6 +780,28 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33225107" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21753247" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41558442" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32946146" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21753247" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18335089" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32792208" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39935064" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -770,7 +818,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="testing" />
     <MESSAGE value="remove useless gitignore" />
     <MESSAGE value="complete construction of an oscillator indicator (14 day Momentum)" />
     <MESSAGE value="basic calmar implementation to measure strategy risk adjusted performance" />
@@ -795,7 +842,8 @@
     <MESSAGE value="added subplot to show acc balance over time note this is still single day training and evaluation" />
     <MESSAGE value="included average plot line and text for evaluation result chart and removed training of model during model evaluation" />
     <MESSAGE value="included multiday training did not fare as well as i wanted, will proceed to chart positive vs negative reward ratio and then try to train resampled timeframe" />
-    <option name="LAST_COMMIT_MESSAGE" value="included multiday training did not fare as well as i wanted, will proceed to chart positive vs negative reward ratio and then try to train resampled timeframe" />
+    <MESSAGE value="multiday seems legit now will test awhile more to see if stable then explore different training duration and steps" />
+    <option name="LAST_COMMIT_MESSAGE" value="multiday seems legit now will test awhile more to see if stable then explore different training duration and steps" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -821,14 +869,34 @@
           <option name="timeStamp" value="75" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/application.py</url>
-          <line>340</line>
-          <option name="timeStamp" value="87" />
+          <url>file://$PROJECT_DIR$/mlcore/custom_gym.py</url>
+          <line>53</line>
+          <option name="timeStamp" value="118" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
-          <url>file://$PROJECT_DIR$/application.py</url>
-          <line>314</line>
-          <option name="timeStamp" value="114" />
+          <url>file://$PROJECT_DIR$/mlcore/custom_gym.py</url>
+          <line>58</line>
+          <option name="timeStamp" value="119" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/mlcore/custom_gym.py</url>
+          <line>66</line>
+          <option name="timeStamp" value="120" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/mlcore/custom_gym.py</url>
+          <line>71</line>
+          <option name="timeStamp" value="121" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/mlcore/custom_gym.py</url>
+          <line>119</line>
+          <option name="timeStamp" value="122" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/mlcore/custom_gym.py</url>
+          <line>76</line>
+          <option name="timeStamp" value="123" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -841,9 +909,15 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="115" />
+      <option name="time" value="124" />
     </breakpoint-manager>
-    <watches-manager />
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="self.balance" language="Python" />
+        <watch expression="self.positions" language="Python" />
+        <watch expression="self.longShortFlag" language="Python" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/data/2019-01-12.csv">
@@ -1082,9 +1156,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="446" max-vertical-offset="1428">
           <caret line="43" column="30" selection-start-line="43" selection-start-column="28" selection-end-line="43" selection-end-column="30" />
-          <folding>
-            <element signature="e#18#49#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1114,16 +1185,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mlcore/rl_agent.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.84821427" vertical-offset="1705" max-vertical-offset="2601">
-          <caret line="145" column="26" selection-start-line="145" selection-start-column="22" selection-end-line="145" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mlcore/test2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.1467626" vertical-offset="493" max-vertical-offset="2635">
@@ -1148,17 +1209,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1926" max-vertical-offset="2822">
           <caret line="150" column="39" selection-start-line="150" selection-start-column="38" selection-end-line="150" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mlcore/custom_gym.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1168" max-vertical-offset="2295">
-          <caret line="31" column="61" selection-start-line="31" selection-start-column="49" selection-end-line="31" selection-end-column="61" />
-          <folding>
-            <element signature="e#18#47#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1196,24 +1246,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/data/2019-04-08.csv">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-20.0" vertical-offset="8005" max-vertical-offset="8687">
+        <state vertical-scroll-proportion="0.0" vertical-offset="8585" max-vertical-offset="8687">
           <caret line="505" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="505" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/2019-04-09.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.3103447" vertical-offset="6243" max-vertical-offset="9894">
-          <caret line="378" column="0" selection-start-line="378" selection-start-column="0" selection-end-line="378" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/2019-04-10.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1337" max-vertical-offset="9877">
-          <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1226,10 +1260,46 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/data/2019-04-09.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="6426" max-vertical-offset="9894">
+          <caret line="378" column="0" selection-start-line="378" selection-start-column="0" selection-end-line="378" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mlcore/rl_agent.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1418" max-vertical-offset="2601">
+          <caret line="97" column="8" selection-start-line="97" selection-start-column="8" selection-end-line="97" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/2019-04-10.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="969" max-vertical-offset="9877">
+          <caret line="59" column="135" selection-start-line="59" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mlcore/custom_gym.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.655172" vertical-offset="55" max-vertical-offset="2295">
+          <caret line="18" column="28" selection-start-line="18" selection-start-column="28" selection-end-line="18" selection-end-column="28" />
+          <folding>
+            <element signature="e#18#47#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/application.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.63309354" vertical-offset="1719" max-vertical-offset="2533">
-          <caret line="354" column="163" selection-start-line="354" selection-start-column="163" selection-end-line="354" selection-end-column="163" />
+        <state vertical-scroll-proportion="0.9294964" vertical-offset="2482" max-vertical-offset="3910">
+          <caret line="332" column="49" selection-start-line="332" selection-start-column="49" selection-end-line="332" selection-end-column="49" />
           <folding>
             <element signature="e#592#2004#0" expanded="false" />
             <element signature="e#2049#2340#0" expanded="false" />
@@ -1239,7 +1309,6 @@
             <element signature="e#4603#5133#0" expanded="false" />
             <element signature="e#5230#6115#0" expanded="false" />
             <element signature="e#6179#6864#0" expanded="false" />
-            <element signature="e#6928#9710#0" expanded="false" />
           </folding>
         </state>
       </provider>
