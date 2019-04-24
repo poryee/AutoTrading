@@ -16,7 +16,7 @@ class CustomEnv():
         self.fxRate = 1.36
         self.lotSize = 0.1
         self.stopLoss = 25
-        self.takeProfit = 25
+        self.takeProfit = 55
         self.longShortFlag = 0  # neutral 0 long 1 short -1
 
 

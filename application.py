@@ -172,6 +172,18 @@ def retrievePastDataDataframe():
     return pastDataAsState
 
 
+def resampleDataframe(dataframe, timeframe):
+    pd.set_option('display.max_columns', None)
+
+    data=dataframe.resample(timeframe).agg({'averageOpen': 'first',
+                                 'averageHigh': 'max',
+                                 'averageLow': 'min',
+                                 'averageClose': 'last',
+                                 'lastTradedVolume': 'sum'
+                                 })
+    return data
+
+
 def visualise(dataframe, episodeAction, episodeReward):
 
     fig, (ax1, ax2) = plt.subplots(2, 1,figsize=(15,15))
@@ -277,10 +289,11 @@ def trainMLModel(endDate, trainingDays, totalEpisodes):
     dqn.save()
 
 
-def evaluateMLModel(evalutionDate, showChart=False):
+def evaluateMLModel(evalutionDate, timeResolution="5min", showChart=False):
 
    # retrieve past data
     pastDataAsState = retrievePastDataDataframe()
+    pastDataAsState = resampleDataframe(pastDataAsState, timeResolution)
 
     # initialise gym environment with single day slice of past data
     env = CustomEnv(pastDataAsState.loc[evalutionDate])
@@ -354,19 +367,19 @@ what is the key outcome?
 2) robust when back tested against historical data 2 month <-- Done
 3) automate trade demo using model and algorithm (completed custom gym environment for agent to interact with based on ig dow jones data in 5min resolution)
 4) unrealised profit or loss into state & new action close position <-- Done
-5) Multiday training and validation <-- Done looks good 1.4k gains from 25points sl 50tp 2:1 RRR (experiment different training length 1week 2week 3week, and steps)
-6) resample to high time frame for evaluation (Check if need to do that for training as well) <-- (so that we don't have to trade that late at night)
-7) custom env to provide returns array via info for performanceTest (Optimise hyper param)
+5) Multiday training and validation <-- Done only slight gains from 25points sl 25tp 1:1 RRR
+6) resample to high time frame for evaluation (Check if need to do that for training as well) <-- Done (so that we don't have to trade that late at night)
+7) custom env to provide returns array via info for performanceTest (Optimise hyper param) (experiment different training length 1week 2week 3week, and steps)
 8) check if underfit or overfit model
 9) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
 10) check for shitty data 0.0,0.0,0.0,0.0 ctrl+shift+f
 '''
 if __name__ == "__main__":
-    #bulkDownload('2019-04-14', 4)
-    #trainMLModel(endDate='2019-04-9', trainingDays=14, totalEpisodes=400)
+    #bulkDownload('2019-04-19', 4)
+    #trainMLModel(endDate='2019-03-19', trainingDays=14, totalEpisodes=400)
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    results = evaluateMLModel('2019-04-10')
+    results = evaluateMLModel('2019-03-22', "15min", True)
     # performanceTest(results)list(filter(lambda x: x >0, nums))
 
     # automateTrading()
