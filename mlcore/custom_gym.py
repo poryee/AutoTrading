@@ -1,7 +1,7 @@
 __author__ = 'po'
 from collections import deque
 import numpy as np
-
+import math
 
 class CustomEnv():
     def __init__(self, dataframe):
@@ -12,12 +12,13 @@ class CustomEnv():
         self.actionSpace = 4  # buy, hold, sell, close
         self.observationSpace = len(dataframe.columns)+1  # ohlcv + net position aka longshortflag
         self.indexPointer = 0
-        self.positions = deque()
+        self.positions = []
         self.fxRate = 1.36
         self.lotSize = 0.1
         self.stopLoss = 25
-        self.takeProfit = 55
+        self.takeProfit = 25
         self.longShortFlag = 0  # neutral 0 long 1 short -1
+        self.logging=False
 
 
     def step(self, action):
@@ -30,6 +31,7 @@ class CustomEnv():
 
         # done when account blowup or reached eod
         episode_over = self.balance <= 0 or self.indexPointer == len(self.dataframe.index)-1
+
         return ob, reward, episode_over, {}
 
 
@@ -46,35 +48,43 @@ class CustomEnv():
 
     def _checkInitialPositions(self, currentState):
         numPositionToClear = 0
-        for position in self.positions:
+        for position in self.positions[:]:
 
             # cut loss
             # long position and position - currentLow >= stoploss
             if self.longShortFlag == 1 and (position - currentState[2] >= self.stopLoss):
+                if(self.logging):print("Long position, Entry: {}, Stoploss: {}, CurrentLow: {}".format(position, self.stopLoss, currentState[2]))
                 self.balance -= self.stopLoss * self.fxRate * self.lotSize
-                numPositionToClear +=1
+                self.positions.remove(position)
+                #numPositionToClear +=1
                 continue
             # short position and position + highesthigh >= stoploss
             elif self.longShortFlag == -1 and (currentState[1] - position >=  self.stopLoss):
+                if(self.logging):print("Short position, Entry: {}, Stoploss: {}, CurrentHigh: {}".format(position, self.stopLoss, currentState[1]))
                 self.balance -= self.stopLoss * self.fxRate * self.lotSize
-                numPositionToClear +=1
+                self.positions.remove(position)
+                #numPositionToClear +=1
                 continue
 
 
             # take profit
             # long position and highesthigh - position >= takeprofit
             if self.longShortFlag == 1 and (currentState[1] - position >= self.takeProfit):
+                if(self.logging):print("Long position, Entry: {}, TakeProfit: {}, CurrentHigh: {}".format(position, self.takeProfit, currentState[1]))
                 self.balance += self.takeProfit * self.fxRate * self.lotSize
-                numPositionToClear +=1
+                self.positions.remove(position)
+                #numPositionToClear +=1
                 continue
             # short position and position - lowestlow >= takeprofit
             elif self.longShortFlag == -1 and (position - currentState[2] >= self.takeProfit):
+                if(self.logging):print("Short position, Entry: {}, TakeProfit: {}, CurrentLow: {}".format(position, self.takeProfit, currentState[2]))
                 self.balance += self.takeProfit * self.fxRate * self.lotSize
-                numPositionToClear +=1
+                self.positions.remove(position)
+                #numPositionToClear +=1
                 continue
 
-        for _ in range(numPositionToClear):
-            self.positions.popleft()
+        #for _ in range(numPositionToClear):
+         #   self.positions.popleft()
 
 
     def _take_action(self, action):

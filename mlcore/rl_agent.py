@@ -8,10 +8,10 @@ import os
 # Hyper Parameters
 BATCH_SIZE = 32
 LR = 0.01  # learning rate
-EPSILON = 0.9  # greedy policy
+EPSILON = 0.95  # greedy policy
 GAMMA = 0.9  # reward discount
 TARGET_REPLACE_ITER = 100  # target update frequency
-MEMORY_CAPACITY = 2000
+MEMORY_CAPACITY = 10000
 '''
 N_ACTIONS = env.action_space.n
 N_STATES = env.observation_space.shape[0]
@@ -29,20 +29,20 @@ class Net(nn.Module):
 
 
         self.feature = nn.Sequential(
-            nn.Linear(N_STATES, 50),
+            nn.Linear(N_STATES, 100),
             nn.ReLU()
         )
 
         self.advantage = nn.Sequential(
-            nn.Linear(50, 50),
+            nn.Linear(100, 100),
             nn.ReLU(),
-            nn.Linear(50, N_ACTIONS)
+            nn.Linear(100, N_ACTIONS)
         )
 
         self.value = nn.Sequential(
-            nn.Linear(50, 50),
+            nn.Linear(100, 500),
             nn.ReLU(),
-            nn.Linear(50, 1)
+            nn.Linear(500, 1)
         )
 
 

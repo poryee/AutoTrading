@@ -52,7 +52,7 @@ def getHistoricalData(specificDate):
 
     # (yyyy:MM:dd-HH:mm:ss)
     # today = datetime.today()
-    #startDate = str(today.date() - timedelta(days=2)).replace("-", ":") + "-00:00:00"
+    # startDate = str(today.date() - timedelta(days=2)).replace("-", ":") + "-00:00:00"
     #endDate = str(today.date() - timedelta(days=0)).replace("-", ":") + "-00:00:00"
 
     startDate = specificDate.date().strftime('%Y:%m:%d') + "-00:00:00"
@@ -175,18 +175,18 @@ def retrievePastDataDataframe():
 def resampleDataframe(dataframe, timeframe):
     pd.set_option('display.max_columns', None)
 
-    data=dataframe.resample(timeframe).agg({'averageOpen': 'first',
-                                 'averageHigh': 'max',
-                                 'averageLow': 'min',
-                                 'averageClose': 'last',
-                                 'lastTradedVolume': 'sum'
-                                 })
+    data = dataframe.resample(timeframe).agg({'averageOpen': 'first',
+                                              'averageHigh': 'max',
+                                              'averageLow': 'min',
+                                              'averageClose': 'last',
+                                              'lastTradedVolume': 'sum'
+    })
+    data.dropna(inplace=True)
     return data
 
 
 def visualise(dataframe, episodeAction, episodeReward):
-
-    fig, (ax1, ax2) = plt.subplots(2, 1,figsize=(15,15))
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 15))
 
     dataframe.plot(y="averageClose", ax=ax1)
     buyTime, buyPrice, sellTime, sellPrice = [], [], [], []
@@ -207,32 +207,31 @@ def visualise(dataframe, episodeAction, episodeReward):
     plt.show()
 
 
-def trainMLModel(endDate, trainingDays, totalEpisodes):
-
+def trainMLModel(endDate, timeResolution, trainingDays, totalEpisodes):
     # retrieve pastdata
     pastDataAsState = retrievePastDataDataframe()
+    pastDataAsState = resampleDataframe(pastDataAsState, timeResolution)
 
     dqn = torchDQN()
     total_reward = []
     total_action = []
 
-
     endDate = datetime.strptime(endDate, '%Y-%m-%d')
 
     # because we want to include endDate in the training hence -1
-    traingDate = endDate-timedelta(days=trainingDays-1)
+    traingDate = endDate - timedelta(days=trainingDays - 1)
 
     # so we end up with largest quotient when dividing totalEpisodes with trainingDays so we end training on endDate
-    trainingEpisode=(totalEpisodes//trainingDays)*trainingDays
-
+    trainingEpisode = (totalEpisodes // trainingDays) * trainingDays
 
     print('\nCollecting experience...')
     for i_episode in range(trainingEpisode):
-        if(i_episode%(trainingDays)==0):
+        if (i_episode % (trainingDays) == 0):
             # because we want to include endDate in the training hence -1
-            traingDate = endDate-timedelta(days=trainingDays-1)
-        if(traingDate.date().strftime('%Y-%m-%d') not in pastDataAsState.index):
-            traingDate+=timedelta(days=1)
+            traingDate = endDate - timedelta(days=trainingDays - 1)
+
+        if (pastDataAsState[traingDate.date().strftime('%Y-%m-%d')].empty):
+            traingDate += timedelta(days=1)
             continue
 
         # initialise gym environment with single day slice of past data
@@ -267,13 +266,14 @@ def trainMLModel(endDate, trainingDays, totalEpisodes):
                 dqn.learn()
 
             if done:
-                print('Ep: ', i_episode, '| Training Date: ',traingDate.date().strftime('%Y-%m-%d'), '| Ep_r: ', round(r, 2))
+                print('Ep: ', i_episode, '| Training Date: ', traingDate.date().strftime('%Y-%m-%d'), '| Ep_r: ',
+                      round(r, 2))
                 ep_r = r
                 break
             s = s_
 
         total_reward.append(ep_r)
-        traingDate+=timedelta(days=1)
+        traingDate += timedelta(days=1)
 
     counter = collections.Counter(total_action)
     print("total unique action ", print(counter))
@@ -290,8 +290,7 @@ def trainMLModel(endDate, trainingDays, totalEpisodes):
 
 
 def evaluateMLModel(evalutionDate, timeResolution="5min", showChart=False):
-
-   # retrieve past data
+    # retrieve past data
     pastDataAsState = retrievePastDataDataframe()
     pastDataAsState = resampleDataframe(pastDataAsState, timeResolution)
 
@@ -335,6 +334,7 @@ def evaluateMLModel(evalutionDate, timeResolution="5min", showChart=False):
         totalAction.extend(episodeAction)
 
     counter = collections.Counter(totalAction)
+    print("total unique action ", print(counter))
 
     plt.title('Reward')
     plt.xlabel('No of Episodes')
@@ -342,12 +342,12 @@ def evaluateMLModel(evalutionDate, timeResolution="5min", showChart=False):
     plt.plot(np.arange(len(totalFinalReward)), totalFinalReward, 'r-', lw=5)
 
     # Calculate the simple average of the rewards
-    yMean = [np.mean(totalFinalReward)]*len(totalFinalReward)
+    yMean = [np.mean(totalFinalReward)] * len(totalFinalReward)
     plt.plot(yMean, label='Mean', linestyle='--')
     plt.text(1, yMean[0], "Average Returns: {:.3f}".format(yMean[0]))
     plt.show()
 
-    winloseRatio=len(list(filter(lambda x: x > 0, totalFinalReward)))/len(totalFinalReward)
+    winloseRatio = len(list(filter(lambda x: x > 0, totalFinalReward))) / len(totalFinalReward)
     print(winloseRatio)
     # temporary placeholder for balance
     return True
@@ -375,11 +375,11 @@ what is the key outcome?
 10) check for shitty data 0.0,0.0,0.0,0.0 ctrl+shift+f
 '''
 if __name__ == "__main__":
-    #bulkDownload('2019-04-19', 4)
-    #trainMLModel(endDate='2019-03-19', trainingDays=14, totalEpisodes=400)
+    #bulkDownload('2019-04-26', 4)
+    trainMLModel(endDate="2019-02-27", timeResolution="15min", trainingDays=14, totalEpisodes=4000)
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    results = evaluateMLModel('2019-03-22', "15min", True)
+    results = evaluateMLModel(evalutionDate="2019-02-28", timeResolution="15min", showChart=False)
     # performanceTest(results)list(filter(lambda x: x >0, nums))
 
     # automateTrading()
