@@ -212,9 +212,10 @@ def trainMLModel(endDate, timeResolution, trainingDays, totalEpisodes):
     pastDataAsState = retrievePastDataDataframe()
     pastDataAsState = resampleDataframe(pastDataAsState, timeResolution)
 
-    dqn = torchDQN()
+    dqn = torchDQN(tensorboard=True)
     total_reward = []
     total_action = []
+    total_steps = 0
 
     endDate = datetime.strptime(endDate, '%Y-%m-%d')
 
@@ -263,7 +264,7 @@ def trainMLModel(endDate, timeResolution, trainingDays, totalEpisodes):
             if dqn.memory_counter > 10000:
                 # but target updates at a slower rate so learning is more stable
                 # think of eval as the hyper active child and target as the parent that critics the child exploration
-                dqn.learn()
+                dqn.learn(total_steps)
 
             if done:
                 print('Ep: ', i_episode, '| Training Date: ', traingDate.date().strftime('%Y-%m-%d'), '| Ep_r: ',
@@ -271,6 +272,7 @@ def trainMLModel(endDate, timeResolution, trainingDays, totalEpisodes):
                 ep_r = r
                 break
             s = s_
+            total_steps+=1
 
         total_reward.append(ep_r)
         traingDate += timedelta(days=1)
@@ -376,10 +378,10 @@ what is the key outcome?
 '''
 if __name__ == "__main__":
     #bulkDownload('2019-04-26', 4)
-    trainMLModel(endDate="2019-02-27", timeResolution="15min", trainingDays=14, totalEpisodes=4000)
+    #trainMLModel(endDate="2019-04-11", timeResolution="15min", trainingDays=14, totalEpisodes=4000)
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    results = evaluateMLModel(evalutionDate="2019-02-28", timeResolution="15min", showChart=False)
+    results = evaluateMLModel(evalutionDate="2019-04-12", timeResolution="15min", showChart=False)
     # performanceTest(results)list(filter(lambda x: x >0, nums))
 
     # automateTrading()

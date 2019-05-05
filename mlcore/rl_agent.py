@@ -4,6 +4,8 @@ import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from tensorboardX import SummaryWriter
+import time
 
 # Hyper Parameters
 BATCH_SIZE = 32
@@ -22,6 +24,8 @@ N_ACTIONS = 4 # retrieve from custom environment buy, hold, sell, close
 N_STATES = 6 # ohlcv + position direction
 ENV_A_SHAPE = 0
 PATH = "net.pkl"
+
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -57,9 +61,13 @@ class Net(nn.Module):
 
 
 class torchDQN(object):
-    def __init__(self):
 
 
+
+    def __init__(self, tensorboard=False):
+        self.tensorboard=tensorboard
+        if(self.tensorboard):
+            self.writer = SummaryWriter('logs/ddqn-{}'.format(int(time.time())))
 
         # normal dqn sequential
         '''
@@ -115,7 +123,7 @@ class torchDQN(object):
         self.memory[index, :] = transition
         self.memory_counter += 1
 
-    def learn(self):
+    def learn(self, globalStep):
         # target parameter update
         if self.learn_step_counter % TARGET_REPLACE_ITER == 0:
             self.target_net.load_state_dict(self.eval_net.state_dict())
@@ -138,6 +146,8 @@ class torchDQN(object):
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        if(self.tensorboard):
+            self.writer.add_scalar('loss', loss.item(), global_step=globalStep)
 
     def save(self):
         torch.save({"eval": self.eval_net.state_dict(),
