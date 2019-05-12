@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d037fefe-3550-419b-9e75-54f9ab97efe4" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/application.py" afterPath="$PROJECT_DIR$/application.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mlcore/rl_agent.py" afterPath="$PROJECT_DIR$/mlcore/rl_agent.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mlcore/custom_gym.py" afterPath="$PROJECT_DIR$/mlcore/custom_gym.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="98dc9ae2-2a21-41ee-bcc5-14f0f2d40153" name="ignorelist" comment="ignorelist" />
@@ -32,8 +32,8 @@
       <file leaf-file-name="application.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/application.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.63414633" vertical-offset="5984" max-vertical-offset="6681">
-              <caret line="378" column="26" selection-start-line="378" selection-start-column="26" selection-end-line="378" selection-end-column="26" />
+            <state vertical-scroll-proportion="0.751462" vertical-offset="6048" max-vertical-offset="6732">
+              <caret line="386" column="4" selection-start-line="386" selection-start-column="4" selection-end-line="386" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -49,23 +49,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test6.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mlcore/test6.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1189" max-vertical-offset="4097">
-              <caret line="85" column="30" selection-start-line="85" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-              <folding>
-                <element signature="e#1#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="rl_agent.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mlcore/rl_agent.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1955" max-vertical-offset="2652">
-              <caret line="69" column="30" selection-start-line="69" selection-start-column="30" selection-end-line="69" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="398" max-vertical-offset="2652">
+              <caret line="66" column="8" selection-start-line="66" selection-start-column="8" selection-end-line="66" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -84,8 +72,8 @@
       <file leaf-file-name="custom_gym.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mlcore/custom_gym.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1563" max-vertical-offset="2465">
-              <caret line="18" column="28" selection-start-line="18" selection-start-column="26" selection-end-line="18" selection-end-column="28" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2465">
+              <caret line="18" column="28" selection-start-line="18" selection-start-column="28" selection-end-line="18" selection-end-column="28" />
               <folding>
                 <element signature="e#18#47#0" expanded="true" />
               </folding>
@@ -123,9 +111,9 @@
         <option value="$PROJECT_DIR$/data/2019-04-10.csv" />
         <option value="$PROJECT_DIR$/data/2019-04-18.csv" />
         <option value="$PROJECT_DIR$/data/2019-04-19.csv" />
-        <option value="$PROJECT_DIR$/mlcore/custom_gym.py" />
         <option value="$PROJECT_DIR$/mlcore/test6.py" />
         <option value="$PROJECT_DIR$/mlcore/rl_agent.py" />
+        <option value="$PROJECT_DIR$/mlcore/custom_gym.py" />
         <option value="$PROJECT_DIR$/application.py" />
       </list>
     </option>
@@ -190,8 +178,18 @@
               <option name="myItemId" value="logs" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="ddqn-1557028685" />
+              <option name="myItemId" value="ig basic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ig basic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -710,7 +708,13 @@
       <option name="project" value="LOCAL" />
       <updated>1556548873288</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Added Tensorboard capabilities to track model over time (currently only the loss) which is the value we want to minimise">
+      <created>1557030949110</created>
+      <option name="number" value="00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1557030949110</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -738,15 +742,16 @@
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33225107" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18335089" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39935064" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.41558442" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32946146" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21536796" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32900432" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18335089" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32792208" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39935064" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -755,7 +760,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32792208" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -796,7 +800,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="prediction model test using mnist" />
     <MESSAGE value="integrated performance test from risk adjusted metrics model, refactor ml model" />
     <MESSAGE value="Refactor code, and update ml_model with cross validation data split so that our prediction model don't overfit" />
     <MESSAGE value="updates" />
@@ -821,7 +824,8 @@
     <MESSAGE value="fixed close position (Did not factor fx and lot size) over profit retrain" />
     <MESSAGE value="completed resampling of data so we can trade at higher timeframe" />
     <MESSAGE value="fixed incorrect popping of position from stack resulting in wrong reward calculation" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed incorrect popping of position from stack resulting in wrong reward calculation" />
+    <MESSAGE value="Added Tensorboard capabilities to track model over time (currently only the loss) which is the value we want to minimise" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Tensorboard capabilities to track model over time (currently only the loss) which is the value we want to minimise" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1208,16 +1212,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mlcore/custom_gym.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1563" max-vertical-offset="2465">
-          <caret line="18" column="28" selection-start-line="18" selection-start-column="26" selection-end-line="18" selection-end-column="28" />
-          <folding>
-            <element signature="e#18#47#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mlcore/test5.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2230" max-vertical-offset="2822">
@@ -1228,16 +1222,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mlcore/rl_agent.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="734" max-vertical-offset="2652">
-          <caret line="69" column="30" selection-start-line="69" selection-start-column="30" selection-end-line="69" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="398" max-vertical-offset="2652">
+          <caret line="66" column="8" selection-start-line="66" selection-start-column="8" selection-end-line="66" selection-end-column="8" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mlcore/custom_gym.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2465">
+          <caret line="18" column="28" selection-start-line="18" selection-start-column="28" selection-end-line="18" selection-end-column="28" />
+          <folding>
+            <element signature="e#18#47#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/application.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.63414633" vertical-offset="5984" max-vertical-offset="6681">
-          <caret line="378" column="26" selection-start-line="378" selection-start-column="26" selection-end-line="378" selection-end-column="26" />
+        <state vertical-scroll-proportion="0.751462" vertical-offset="6048" max-vertical-offset="6732">
+          <caret line="386" column="4" selection-start-line="386" selection-start-column="4" selection-end-line="386" selection-end-column="4" />
           <folding />
         </state>
       </provider>

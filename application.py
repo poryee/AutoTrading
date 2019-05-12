@@ -369,19 +369,22 @@ what is the key outcome?
 2) robust when back tested against historical data 2 month <-- Done
 3) automate trade demo using model and algorithm (completed custom gym environment for agent to interact with based on ig dow jones data in 5min resolution)
 4) unrealised profit or loss into state & new action close position <-- Done
-5) Multiday training and validation <-- Done only slight gains from 25points sl 25tp 1:1 RRR
+5) Multiday training and validation <-- Done only slight gains from 25points sl 50tp 2:1 RRR
 6) resample to high time frame for evaluation (Check if need to do that for training as well) <-- Done (so that we don't have to trade that late at night)
-7) custom env to provide returns array via info for performanceTest (Optimise hyper param) (experiment different training length 1week 2week 3week, and steps)
-8) check if underfit or overfit model
-9) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
-10) check for shitty data 0.0,0.0,0.0,0.0 ctrl+shift+f
+7) custom env to provide returns array via info for performanceTest (Optimise hyper param) 1 month training plus 1 week walk forward
+    (have yet to test other point base sl:tp, e.g 40:80 okok but must make sure loss is low, 50:100 seems lit, 25:75 cmi, 50:25 not worth the drawdowns)
+    (100:50 crazy drawdown on certain days, 150:50 high winrate but not much profit a few losses would wipe the floor) <-- seems like scalping isnt the way to go here
+8) check if underfit or overfit model <-- Done added tensorboard to monitor loss overtime noticed that beyond 20k steps aka 600ish episode the model starts to diverge
+9) Trade profiler for evaluation Average High/Low + Max High/Low, Win/Lose Rate, RRR
+10) https://www.kaggle.com/itoeiji/deep-reinforcement-learning-on-stock-data
+11) check for shitty data 0.0,0.0,0.0,0.0 ctrl+shift+f
 '''
 if __name__ == "__main__":
-    #bulkDownload('2019-04-26', 4)
-    #trainMLModel(endDate="2019-04-11", timeResolution="15min", trainingDays=14, totalEpisodes=4000)
+    #bulkDownload('2019-05-08', 4)
+    #trainMLModel(endDate="2019-04-13", timeResolution="30min", trainingDays=30, totalEpisodes=600)
 
     # exactly the same steps as trainMLModel but without saving while loading trained model
-    results = evaluateMLModel(evalutionDate="2019-04-12", timeResolution="15min", showChart=False)
+    results = evaluateMLModel(evalutionDate="2019-04-17", timeResolution="30min", showChart=False)
     # performanceTest(results)list(filter(lambda x: x >0, nums))
 
     # automateTrading()
